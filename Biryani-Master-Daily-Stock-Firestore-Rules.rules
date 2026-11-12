@@ -1,12 +1,15 @@
 rules_version = '2';
 
-// Biryani Master Kitchen Daily Stock v2.1 — Firestore rules (project
+// Biryani Master Kitchen Daily Stock v2.3 — Firestore rules (project
 // bm-kitchen-hub — the project for the three apps AND the website
 // "Biryani Master Supply Manager", which shares the same live ds_*
-// data. Rewritten 2026-11-12 for the final v2.1 pack; the rules are
-// the same as v2.0 — no rule changed, only the header and the notes
-// (the website and the per-role configs do not need different rules:
-// rules are project-level and key-independent).
+// data. Rewritten 2026-11-12 for the final v2.3 pack.
+// ⚠️ v2.3 RULES MUST BE RE-PUBLISHED: v2.3 adds the ds_patila
+// collection (self-pickup patila tracking) — the old v2.1/v2.2 rules
+// do not mention it, so patila sync would be denied until this file
+// is pasted + published again (same console steps as before, step 2
+// below). The ds_meta/users + ds_meta/requests docs need NO new rule:
+// they are ordinary ds_meta docs, already open like branches/items.
 //
 // The apps are HTML-wrapped and use Firebase via the web SDK, NOT a
 // Gradle native build, so no google-services Gradle plugin /
@@ -39,7 +42,7 @@ rules_version = '2';
 // is the single central authority: only a Firebase Auth session signed
 // in as that email may write the admin-only paths (ds_audit and the
 // ds_meta/admin record). Everyone else (including the Restaurant and
-// Kitchen apps, which log in with their own 4-digit PINs, not Firebase
+// Kitchen apps, which log in with their own 4–6 digit PINs, not Firebase
 // Auth) can READ those paths but cannot write them.
 // Operational paths (ds_daily, ds_orders, ds_meta branches/items)
 // stay open read/write: the PIN-logged Restaurant and Kitchen apps
@@ -49,7 +52,9 @@ rules_version = '2';
 // The website logs in the same way (ID + PIN per role, Admin by email)
 // and writes through the same open paths; its website-PIN records live
 // in ds_meta/webusers, which is an ordinary ds_meta doc (open like
-// branches/items), so no extra rule is needed for the website.
+// branches/items), so no extra rule is needed for the website. The
+// v2.3 user registry (ds_meta/users) and approval requests
+// (ds_meta/requests) are ordinary ds_meta docs too — also open.
 //
 // Covers ONLY the new Daily Stock paths (three apps + website: Supply
 // Manager Admin, Restaurant, Kitchen — all read/write the same live
@@ -65,6 +70,16 @@ rules_version = '2';
 //   ds_audit   — append-only log of who changed what (accepts, overrides,
 //                corrections by Supply Manager Admin)
 //   ds_tokens  — FCM device tokens for the Kitchen (killed-app push path)
+//   ds_patila  — v2.3: self-pickup patila (physical pot) tracking —
+//                one record per send-out event: count (required) +
+//                mode (Self Pickup by Customer / By Rider) + optional
+//                patila numbers + optional destination note, status
+//                Out / Returned. Recorded by the Kitchen only; only
+//                the Kitchen (or the Admin, correcting) can mark one
+//                Returned. SEPARATE from the food-stock accounting —
+//                it never appears inside Recipe Use / Total Used /
+//                Stock Bill; the Daily Report lists it as its own
+//                section, counted by mode.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -81,8 +96,8 @@ service cloud.firestore {
     match /ds_meta/{docId} {
       allow read: if true;
       // The 'admin' record is admin-only; every other ds_meta doc
-      // (branches, items, webusers) stays open for the PIN-logged apps
-      // and the website.
+      // (branches, items, webusers, users, requests) stays open for
+      // the PIN-logged apps and the website.
       allow write: if docId != 'admin' || isAdmin();
     }
     match /ds_audit/{doc=**} {
@@ -92,6 +107,15 @@ service cloud.firestore {
     match /ds_tokens/{doc=**} {
       // v2.1: FCM device tokens for the Kitchen (killed-app push path).
       // Open like the other ds_* paths — tokens carry no user data.
+      allow read, write: if true;
+    }
+    match /ds_patila/{doc=**} {
+      // v2.3: patila (physical pot) tracking — one record per
+      // send-out event, status Out / Returned. Open like the other
+      // ds_* paths: the PIN-logged Kitchen app records send-outs and
+      // marks returns, the Restaurant app reads the pending list, and
+      // the Admin corrects entries. Only the Kitchen may mark a
+      // patila Returned — enforced inside the apps, not by these rules.
       allow read, write: if true;
     }
   }

@@ -86,6 +86,15 @@ footer b{color:#2b2118}
 .stockcell{background:#FFFBF2;border:2px solid #F3E3C3;border-radius:14px;padding:10px;text-align:center}
 .stockcell b{display:block;font-size:20px}
 .stockcell span{font-size:14px;color:#6b5d4f}
+#hdrLogoutBtn{width:auto;margin:10px auto 2px;min-height:44px;padding:8px 20px;font-size:15px;background:rgba(255,255,255,.16);color:#fff;border:2px solid rgba(255,255,255,.75)}
+#hdrLogoutBtn:hover{background:rgba(255,255,255,.28)}
+.patilabanner{background:#FEF3C7;border:2px solid #D97706;border-radius:16px;padding:14px;text-align:center;font-weight:800;font-size:18px;margin:12px 0}
+.patilabanner .pcounts{font-size:20px;margin-top:4px}
+.patilabanner .pcounts b{font-size:24px}
+.patiladetail{font-size:15px;color:#6b5d4f;margin-top:6px}
+.patiladetail summary{cursor:pointer;font-weight:700;color:#2b2118}
+.shopdetail{background:#FEF3C7;border:2px dashed #D97706;border-radius:12px;padding:10px 14px;font-size:17px;font-weight:700;margin-top:10px}
+.shopdetail .muted{font-weight:400}
 @media (max-width:560px){.card{padding:14px}.two{grid-template-columns:1fr}.tab{font-size:15px;min-width:96px}table{font-size:15px}th,td{padding:8px 6px}.report .rhead h2{font-size:20px}.apphead .apptitle{font-size:22px}.apphead img.logo{width:84px;height:84px}}
 </style>
 
@@ -97,28 +106,37 @@ footer b{color:#2b2118}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
-<header class="apphead"><img class="logo" id="hdrLogo" alt="Biryani Master logo"><div class="apptitle">Daily Kitchen Stock</div><div class="appsub">BM Restaurant</div><br><span class="fbpill local">Local only</span><div class="credit">Developed by Abdullah • 0311 5928444</div><div class="syncline" id="syncLine">Last sync — · Pending uploads: 0</div><span class="idchip" id="idChip"></span></header>
-<div class="wrap"><div class="card" id="setupCard"><h2>First-Time Setup — Restaurant</h2><p class="sub">Set up once. Your ID is permanent and your branch is locked after setup — only the Supply Manager Admin can change it.</p><label>1 · Your ID <span class="ur">(آئی ڈی)</span></label><input id="setupId" placeholder="e.g. shaheen" autocapitalize="off"><label>2 · Branch / Pair <span class="ur">(برانچ)</span></label><select id="setupBranch"></select><label>3 · Your 4-digit PIN <span class="ur">(پن)</span></label><input id="setupPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"><label>4 · Mobile number <span class="ur">(موبائل — PIN recovery)</span></label><input id="setupMobile" type="tel" placeholder="03xx xxxxxxx"><button class="btn big" id="setupBtn">Save Setup &amp; Log In</button><div id="setupMsg"></div></div><div class="card" id="loginCard" style="display:none"><h2>Log In — Restaurant</h2><p class="sub">Log in with your ID + PIN.</p><label>Your ID <span class="ur">(آئی ڈی)</span></label><input id="loginId" autocapitalize="off" placeholder="e.g. shaheen"><label>PIN <span class="ur">(پن)</span></label><input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"><button class="btn big" id="loginBtn">Log In</button><button class="btn ghost" id="forgotBtn">PIN bhool gaye? (Forgot PIN)</button><div id="resetBox" style="display:none"><label>Registered mobile number</label><input id="resetMobile" type="tel" placeholder="03xx xxxxxxx"><label>New 4-digit PIN</label><input id="resetPin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"><button class="btn gold" id="resetBtn">Reset PIN</button></div><div id="loginMsg"></div></div></div>
+<header class="apphead"><img class="logo" id="hdrLogo" alt="Biryani Master logo"><div class="apptitle">Daily Kitchen Stock</div><div class="appsub">BM Restaurant</div><br><span class="fbpill local">Local only</span><div class="credit">Developed by Abdullah • 0311 5928444</div><div class="syncline" id="syncLine">Last sync — · Pending uploads: 0</div><span class="idchip" id="idChip"></span><br><button class="btn ghost small" id="hdrLogoutBtn" style="display:none">Log Out</button></header>
+<div class="wrap"><div class="card" id="setupCard"><h2>First-Time Setup — Restaurant</h2><p class="sub">Set up once. Your ID is permanent and your branch is locked after setup — only the Supply Manager Admin can change it. If this branch already has a user, your ID goes to your Restaurant for approval first — you can log in once they approve it.</p><label>1 · Your ID <span class="ur">(آئی ڈی)</span></label><input id="setupId" placeholder="e.g. shaheen" autocapitalize="off"><label>2 · Branch / Pair <span class="ur">(برانچ)</span></label><select id="setupBranch"></select><label>3 · PIN length <span class="ur">(پن — 4, 5 or 6 digits)</span></label><select id="setupPinLen"><option value="4">4 digits</option><option value="5">5 digits</option><option value="6">6 digits</option></select><label>Your PIN (4–6 digits) <span class="ur">(پن)</span></label><input id="setupPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><label>4 · Mobile number <span class="ur">(موبائل — PIN recovery)</span></label><input id="setupMobile" type="tel" placeholder="03xx xxxxxxx"><button class="btn big" id="setupBtn">Save Setup &amp; Log In</button><button class="btn ghost" id="backToLoginBtn" style="display:none">← Back to Log In</button><div id="setupMsg"></div></div><div class="card" id="loginCard" style="display:none"><h2>Log In — Restaurant</h2><p class="sub">Log in with your ID + PIN.</p><label>Your ID <span class="ur">(آئی ڈی)</span></label><input id="loginId" autocapitalize="off" placeholder="e.g. shaheen"><label>PIN (4–6 digits) <span class="ur">(پن)</span></label><input id="loginPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button class="btn big" id="loginBtn">Log In</button><button class="btn ghost" id="forgotBtn">PIN bhool gaye? (Forgot PIN)</button><button class="btn ghost" id="showSetupBtn">Set up another ID on this phone</button><div id="resetBox" style="display:none"><label>Registered mobile number</label><input id="resetMobile" type="tel" placeholder="03xx xxxxxxx"><label>New PIN (4–6 digits)</label><input id="resetPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button class="btn gold" id="resetBtn">Reset PIN</button></div><div id="loginMsg"></div></div></div>
 <div class="wrap" id="restApp" style="display:none">
 <div class="tabs">
 <button class="tab on" id="tabOrder">Today's Order</button>
 <button class="tab" id="tabOrders">My Orders</button>
+<button class="tab" id="tabRequests">Requests</button>
 <button class="tab" id="tabReport">Daily Report</button>
 </div>
 <div id="paneOrder">
 <div class="card">
 <h2>Today's Order — <span id="orderBranchName"></span></h2>
-<p class="sub">Enter each dish in two columns: Rice / Tota Rice kg on the left, protein kg on the right. Each row = 1 Patila. Zarda is Rice only. Daal Chawal is Tota Rice + Daal, and its Tota patila and Daal patila are counted separately. Placing an order sends it to your Kitchen — then it is locked.</p>
+<p class="sub">Enter each dish in two columns: Rice / Tota Rice kg on the left, protein kg on the right. Each row = 1 Patila. Zarda is Rice only. Daal Chawal is Tota Rice + Daal, and its Tota patila and Daal patila are counted separately. Fill every dish you need, then press ONE button below — the whole order goes to your Kitchen together, then it is locked.</p>
 <label>Date <span class="ur">(تاریخ)</span></label>
 <input type="date" id="orderDate">
 </div>
+<div id="patilaBanner"></div>
 <div id="dishCards"></div>
+<div class="card"><button class="btn big" id="placeAllBtn">Place Order — Send to Kitchen</button><div id="placeMsg"></div><p class="sub">One button sends every dish line above together to your Kitchen.</p></div>
+<div class="card"><h2>Self-Pickup Patilas <span class="ur">(پتیلا)</span> — View Only</h2>
+<p class="sub">Patilas still out with customers or the rider. Only the Kitchen can mark a patila returned — you can see them here, but you cannot clear them.</p>
+<div id="patilaView"></div></div>
 <div class="card"><h2>Kitchen Stock — Remaining (read-only)</h2>
 <p class="sub">You can see your Kitchen's stock, but you cannot enter or change it.</p>
 <div class="stockgrid" id="kitchenStockView"></div></div>
 </div>
 <div id="paneOrders" style="display:none">
 <div class="card"><h2>My Orders</h2><p class="sub">Placed orders cannot be edited or deleted. If the Kitchen rejects one, enter it again in Today's Order. Only the Admin can change a placed entry.</p><div id="myOrders"></div></div>
+</div>
+<div id="paneRequests" style="display:none">
+<div class="card"><h2>ID Requests — Approve / Reject</h2><p class="sub">New IDs for your branch wait here for YOUR approval — the Admin does not see them. Approve an ID and it can log in; reject it and it is removed from this list.</p><div id="reqList"></div></div>
 </div>
 <div id="paneReport" style="display:none">
 <div class="card"><h2>Daily Report</h2>
@@ -244,47 +262,254 @@ function setPairActive(pairId,active){
   b.forEach(x=>{if(x.pairId===pairId){x.active=!!active;changed=true;}});
   if(changed)saveBranches(b);return changed;
 }
-/* ---------- ID-first setup + login (Restaurant / Kitchen) ----------
-   Setup order is fixed: (1) ID, (2) Branch, (3) 4-digit PIN, (4) mobile.
+/* ---------- v2.3: ID-first setup + login + approval (Restaurant / Kitchen) ----------
+   Setup order is fixed: (1) ID, (2) Branch, (3) PIN 4–6 digits, (4) mobile.
    Login afterwards is ID + PIN — never PIN-only. A wrong ID is refused.
-   The ID is permanent; only the Admin can change it. Branch is locked
-   after setup. */
+   The ID is permanent; each user's branch is locked at approval — only
+   the Supply Manager Admin can change it.
+   APPROVAL (v2.3): a new ID is NOT usable at once. setupUser() writes
+   the user into the synced registry (ds_meta/users) and the approval
+   request into ds_meta/requests, and the RESTAURANT of that branch
+   approves or rejects it (Requests tab). The FIRST account for a
+   branch+role auto-approves — that is how the first Restaurant account
+   gets in. A user who is already approved (e.g. on another phone)
+   binds this device at setup with no new request. PINs are NEVER
+   synced: the PIN hash lives only on the device, per user
+   (ds_<role>_pin_<id>), plus the legacy single key for the last user.
+   LOGOUT never erases setup: any approved ID can log in on the same
+   phone afterwards (helper taking over from a chef on leave). */
+const PERMS_DEFAULT={placeOrders:true,updateStock:true,approveIds:true};
 function userKey(role,field){return "ds_"+role+"_"+field;}
 function hasSetup(role){return !!localStorage.getItem(userKey(role,"id"));}
 function getUserId(role){return localStorage.getItem(userKey(role,"id"))||"";}
 function getUserBranch(role){return localStorage.getItem(userKey(role,"branch"))||"";}
 function getUserMobile(role){return localStorage.getItem(userKey(role,"mobile"))||"";}
+/* Per-device user registry: id -> {role, branch, mobile, pinHash,
+   approved, perms}. This is what makes multi-user login on one phone
+   work; the legacy single keys below stay for the last user (the
+   harness + v2.2 devices read them). */
+function getLocalUsers(){return lsGet("ds_local_users",{});}
+function saveLocalUsers(map){lsSet("ds_local_users",map||{});}
+function pinKey(role,id){return "ds_"+role+"_pin_"+String(id||"").trim().toLowerCase();}
+/* Synced user registry: ds_meta/users, one top-level field per user
+   id (merge:true — same pattern as assignments, so one phone's write
+   never wipes another's record). */
+function getUsers(){return lsGet("ds_users",{});}
+function saveUsers(map){lsSet("ds_users",map||{});fbSync("ds_meta","users",map||{});}
+function getUserRec(role,id){const m=getUsers();const r=m[String(id||"").trim().toLowerCase()];return (r&&r.role===role)?r:null;}
+function getRequests(){return lsGet("ds_requests",{});}
+function saveRequests(map){lsSet("ds_requests",map||{});fbSync("ds_meta","requests",map||{});}
+function approvedUsersFor(branch,role){return Object.keys(getUsers()).map(k=>getUsers()[k]).filter(u=>u&&u.role===role&&u.branch===branch&&u.status==="approved");}
+function pendingRequestsForPair(pairId){
+  return Object.keys(getRequests()).map(k=>getRequests()[k]).filter(r=>r&&r.status==="pending"&&pairOfBranch(r.branch)===pairId);
+}
+function pendingRequestsForBranch(branch){
+  const pid=pairOfBranch(branch);if(!pid)return [];
+  return pendingRequestsForPair(pid);
+}
+function _storeLocalUser(role,id,branch,mobile,pinHash,approved,perms){
+  const local=getLocalUsers();
+  local[String(id).toLowerCase()]={role:role,branch:branch,mobile:mobile||"",pinHash:pinHash,approved:!!approved,perms:perms||Object.assign({},PERMS_DEFAULT)};
+  saveLocalUsers(local);
+  localStorage.setItem(userKey(role,"pin"),pinHash);
+  localStorage.setItem(userKey(role,"id"),id);
+  localStorage.setItem(userKey(role,"branch"),branch);
+  if(mobile)localStorage.setItem(userKey(role,"mobile"),String(mobile));
+}
 async function setupUser(role,opts){
   opts=opts||{};
-  /* v2.2 — BRANCH LOCK: setup runs exactly ONCE per device. After that
-     the branch can never be changed from this app — only the Supply
-     Manager Admin can reassign the device (setAssignedBranch). */
-  if(hasSetup(role))throw new Error("Setup is already done — your branch is locked. Only the Supply Manager Admin can change it.");
   const id=String(opts.id||"").trim().toLowerCase();
   if(!id)throw new Error("Enter your ID first");
   if(!opts.branch)throw new Error("Choose your branch");
-  if(!/^\d{4}$/.test(String(opts.pin||"")))throw new Error("PIN must be exactly 4 digits");
+  if(!/^\d{4,6}$/.test(String(opts.pin||"")))throw new Error("PIN must be 4 to 6 digits");
+  /* v2.3 — pull the synced user registry BEFORE deciding. The local
+     cache may still be empty right after load (fbPullMeta is async),
+     and deciding from an empty cache would wrongly auto-approve a
+     second user for a branch that already has one. Offline the pull
+     simply fails and the local cache decides, as before. */
+  try{await fbPullMeta();}catch(e){}
+  const b=branchById(opts.branch);
+  if(!b)throw new Error("Choose a branch");
+  /* NOTE: a deactivated branch is NOT refused at setup — setup may
+     happen while a pair is off, and the LOGIN gate refuses it with
+     the 'deactivated' message (the harness K4 flow depends on this). */
+  /* v2.3 — BRANCH LOCK PER USER: this ID already has a branch; it can
+     never be changed from this app — only the Supply Manager Admin
+     can reassign it. A DIFFERENT ID on the same phone is a new user. */
+  const local0=getLocalUsers()[id];
+  if(local0&&local0.role===role&&local0.branch!==opts.branch)throw new Error("Your branch is locked — setup is already done for this ID. Only the Supply Manager Admin can change it.");
   const h=await sha256("ds-pin:"+role+":"+id+":"+opts.pin);
-  localStorage.setItem(userKey(role,"pin"),h);
-  localStorage.setItem(userKey(role,"id"),id);
-  localStorage.setItem(userKey(role,"branch"),opts.branch);
-  if(opts.mobile)localStorage.setItem(userKey(role,"mobile"),String(opts.mobile));
+  const existing=getUserRec(role,id);
+  if(existing&&existing.status==="suspended")throw new Error("This ID is suspended — ask the Supply Manager Admin");
+  /* Already approved (this device, another phone, or the website):
+     just bind this device — no new request, no re-approval. */
+  if(existing&&existing.status==="approved"){
+    _storeLocalUser(role,id,existing.branch,opts.mobile||existing.mobile||"",h,true,existing.perms);
+    registerAssignment(role,existing.branch,opts.mobile||existing.mobile||"");
+    return {approved:true,bound:true};
+  }
+  /* A pending request already exists for this ID: wait for the
+     Restaurant — never create a second request. */
+  const dup=Object.keys(getRequests()).map(k=>getRequests()[k]).find(r=>r&&r.userId===id&&r.role===role&&r.status==="pending");
+  if(dup)throw new Error("This ID is already waiting for approval — ask your Restaurant to approve it");
+  /* FIRST account for this branch+role: auto-approve, so the first
+     Restaurant account can get in with no one to approve it. */
+  if(!approvedUsersFor(opts.branch,role).length){
+    const rec={id:id,role:role,branch:opts.branch,mobile:opts.mobile||"",status:"approved",perms:Object.assign({},PERMS_DEFAULT),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+    const users=getUsers();users[id]=rec;saveUsers(users);
+    _storeLocalUser(role,id,opts.branch,opts.mobile||"",h,true,rec.perms);
+    registerAssignment(role,opts.branch,opts.mobile||"");
+    return {approved:true,auto:true};
+  }
+  /* Otherwise: create a pending approval request for the branch's
+     Restaurant. The ID cannot log in until the Restaurant approves. */
+  const reqId=uid("REQ");
+  const reqs=getRequests();
+  reqs[reqId]={id:reqId,userId:id,role:role,branch:opts.branch,mobile:opts.mobile||"",deviceId:getDeviceId(),status:"pending",createdAt:new Date().toISOString()};
+  saveRequests(reqs);
+  _storeLocalUser(role,id,opts.branch,opts.mobile||"",h,false);
   registerAssignment(role,opts.branch,opts.mobile||"");
-  return true;
+  return {approved:false,requestId:reqId};
+}
+/* The Restaurant of the pair approves / rejects an ID request.
+   Approval creates the approved user record; rejection removes the
+   request from the pending list (kept as "rejected" for the record).
+   The Admin never sees these requests. */
+function approveRequest(reqId,byId){
+  const reqs=getRequests();const req=reqs[reqId];
+  if(!req||req.status!=="pending")throw new Error("Request not found or already decided");
+  if(_curUserRole==="restaurant"&&_curUserId&&!canApproveIds("restaurant",_curUserId))throw new Error("You do not have permission to approve IDs — ask the Supply Manager Admin");
+  if(_curUserRole==="restaurant"&&_curUserId){
+    const me=getUserRec("restaurant",_curUserId);
+    if(!me||pairOfBranch(me.branch)!==pairOfBranch(req.branch))throw new Error("Only the Restaurant of this branch can approve this ID");
+  }
+  req.status="approved";req.decidedAt=new Date().toISOString();req.decidedBy=byId||_curUserId||"Restaurant";
+  saveRequests(reqs);
+  const users=getUsers();
+  users[req.userId]={id:req.userId,role:req.role,branch:req.branch,mobile:req.mobile||"",status:"approved",perms:Object.assign({},PERMS_DEFAULT),createdAt:req.createdAt,updatedAt:new Date().toISOString()};
+  saveUsers(users);
+  return users[req.userId];
+}
+function rejectRequest(reqId,byId,reason){
+  const reqs=getRequests();const req=reqs[reqId];
+  if(!req||req.status!=="pending")throw new Error("Request not found or already decided");
+  if(_curUserRole==="restaurant"&&_curUserId&&!canApproveIds("restaurant",_curUserId))throw new Error("You do not have permission to reject IDs — ask the Supply Manager Admin");
+  if(_curUserRole==="restaurant"&&_curUserId){
+    const me=getUserRec("restaurant",_curUserId);
+    if(!me||pairOfBranch(me.branch)!==pairOfBranch(req.branch))throw new Error("Only the Restaurant of this branch can reject this ID");
+  }
+  req.status="rejected";req.decidedAt=new Date().toISOString();req.decidedBy=byId||_curUserId||"Restaurant";req.rejectReason=String(reason||"").trim();
+  saveRequests(reqs);
+  return req;
+}
+/* ---------- current session user + permissions ---------- */
+let _curUserId=null,_curUserRole=null;
+function setCurrentUser(role,id){_curUserRole=role||null;_curUserId=id?String(id).trim().toLowerCase():null;}
+function currentUser(){return {role:_curUserRole,id:_curUserId};}
+function getUserPerms(role,id){
+  const rec=getUserRec(role,id);
+  if(rec&&rec.perms)return rec.perms;
+  const local=getLocalUsers()[String(id||"").trim().toLowerCase()];
+  if(local&&local.perms)return local.perms;
+  return Object.assign({},PERMS_DEFAULT);
+}
+function canPlaceOrders(role,id){return !!getUserPerms(role,id).placeOrders;}
+function canUpdateStock(role,id){return !!getUserPerms(role,id).updateStock;}
+function canApproveIds(role,id){return !!getUserPerms(role,id).approveIds;}
+function _requirePerm(role,id,perm,what){
+  if(_curUserId&&!getUserPerms(role,id)[perm])throw new Error("You do not have permission to "+what+" — ask the Supply Manager Admin");
+}
+/* Admin: grant/revoke a user's permissions, or suspend / reactivate
+   a user. Audit-logged; syncs through ds_meta/users. */
+function adminSetUserPerms(userId,perms,note){
+  requireAdmin();
+  if(!note||!String(note).trim())throw new Error("An audit note is required to change permissions");
+  const users=getUsers();const u=users[String(userId||"").trim().toLowerCase()];
+  if(!u)throw new Error("User not found");
+  u.perms={placeOrders:!!(perms&&perms.placeOrders),updateStock:!!(perms&&perms.updateStock),approveIds:!!(perms&&perms.approveIds)};
+  u.updatedAt=new Date().toISOString();
+  saveUsers(users);
+  addAudit("Admin",note,"Changed permissions for "+u.id+" ("+u.role+", "+u.branch+"): placeOrders="+(u.perms.placeOrders?"yes":"no")+", updateStock="+(u.perms.updateStock?"yes":"no")+", approveIds="+(u.perms.approveIds?"yes":"no"));
+  return u;
+}
+function adminSetUserStatus(userId,status,note){
+  requireAdmin();
+  if(status!=="approved"&&status!=="suspended")throw new Error("Status must be approved or suspended");
+  if(!note||!String(note).trim())throw new Error("An audit note is required to change a user's status");
+  const users=getUsers();const u=users[String(userId||"").trim().toLowerCase()];
+  if(!u)throw new Error("User not found");
+  u.status=status;u.updatedAt=new Date().toISOString();
+  saveUsers(users);
+  addAudit("Admin",note,(status==="suspended"?"Suspended":"Reactivated")+" user "+u.id+" ("+u.role+", "+u.branch+")");
+  return u;
 }
 async function checkLogin(role,id,pin){
+  id=String(id||"").trim().toLowerCase();
+  if(!id)return false;
+  /* v2.3 — pull first: an approval granted on another phone (by the
+     branch's Restaurant) must be visible here, or a just-approved
+     user would still be refused until some other pull runs. */
+  try{await fbPullMeta();}catch(e){}
+  const local=getLocalUsers()[id];
+  if(local&&local.role===role&&local.pinHash){
+    const h=await sha256("ds-pin:"+role+":"+id+":"+String(pin||""));
+    if(local.pinHash!==h)return false; // wrong PIN refused
+    const rec=getUserRec(role,id);
+    if(rec&&rec.status==="suspended")return false; // suspended refused
+    if(rec&&rec.status!=="approved")return false;
+    if(!rec&&local.approved===false)return false; // still waiting for approval
+    return true;
+  }
+  /* Legacy path (v2.2 device, no per-user record yet): the single
+     stored PIN hash, grandfathered in — but a synced suspended /
+     unapproved record still refuses. Migrates the user on success. */
   const stored=localStorage.getItem(userKey(role,"id"));
-  if(!stored)return false;
-  if(String(id||"").trim().toLowerCase()!==stored)return false; // wrong ID refused
+  if(!stored||stored!==id)return false; // wrong ID refused
   const h=await sha256("ds-pin:"+role+":"+stored+":"+String(pin||""));
-  return localStorage.getItem(userKey(role,"pin"))===h;
+  if(localStorage.getItem(userKey(role,"pin"))!==h)return false;
+  const rec=getUserRec(role,id);
+  if(rec&&rec.status==="suspended")return false;
+  if(rec&&rec.status!=="approved")return false;
+  const branch=getUserBranch(role);
+  const local2=getLocalUsers();
+  local2[id]={role:role,branch:branch,mobile:getUserMobile(role),pinHash:h,approved:true,perms:(rec&&rec.perms)||Object.assign({},PERMS_DEFAULT)};
+  saveLocalUsers(local2);
+  if(!rec){
+    const users=getUsers();
+    users[id]={id:id,role:role,branch:branch,mobile:getUserMobile(role),status:"approved",perms:Object.assign({},PERMS_DEFAULT),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+    saveUsers(users);
+  }
+  return true;
 }
 async function resetPin(role,mobile,newPin){
   if(String(mobile||"").trim()!==getUserMobile(role)||!getUserMobile(role))return false;
-  if(!/^\d{4}$/.test(String(newPin||"")))return false;
+  if(!/^\d{4,6}$/.test(String(newPin||"")))return false;
   const id=getUserId(role);if(!id)return false;
   const h=await sha256("ds-pin:"+role+":"+id+":"+newPin);
+  const local=getLocalUsers();
+  if(local[id]){local[id].pinHash=h;saveLocalUsers(local);}
+  localStorage.setItem(pinKey(role,id),h);
   localStorage.setItem(userKey(role,"pin"),h);return true;
+}
+/* ---------- Log Out (all three apps + website) ----------
+   Ends the session and returns to the login screen. Setup, PINs and
+   branch records stay on the device — a different approved user can
+   log in on the same phone at once. The bell tone stops (it is
+   re-enabled at the next login) and the native background listener
+   stops too. */
+function doLogout(role){
+  try{_stopTone();}catch(e){}
+  try{setToneEnabled(false);}catch(e){}
+  try{stopNativeListening();}catch(e){}
+  try{stopOrderListener();}catch(e){}
+  try{stopPatilaListener();}catch(e){}
+  setCurrentUser(null,null);
+  try{setDSRole(null);}catch(e){}
+  _syncBranch=null;_alertBranch=null;
+  try{const b=document.getElementById("hdrLogoutBtn");if(b)b.style.display="none";}catch(e){}
+  try{const c=document.getElementById("idChip");if(c)c.textContent="";}catch(e){}
+  try{if(typeof window.onLoggedOut==="function")window.onLoggedOut(role||_dsRole);}catch(e){}
+  return true;
 }
 /* ---------- Admin login (email only) ---------- */
 function adminHasPassword(){return !!localStorage.getItem("ds_admin_pw");}
@@ -320,10 +545,16 @@ function registerAssignment(role,branch,mobile){
   saveAssignments(map);
   return map[getDeviceId()];
 }
-function adoptAssignment(role){
+function adoptAssignment(role,id){
   const a=getAssignments()[getDeviceId()];
   if(!a||a.role!==role)return null;
+  /* Multi-user device: the assignment belongs to ONE user id — only
+     adopt it when it is this user's own device record. */
+  if(id&&String(a.id||"").toLowerCase()!==String(id).toLowerCase())return null;
   localStorage.setItem(userKey(role,"branch"),a.branch);
+  const local=getLocalUsers();
+  const lid=String(a.id||"").toLowerCase();
+  if(local[lid]&&local[lid].branch!==a.branch){local[lid].branch=a.branch;saveLocalUsers(local);}
   return a.branch;
 }
 function setAssignedBranch(deviceId,branch,note){
@@ -331,6 +562,15 @@ function setAssignedBranch(deviceId,branch,note){
   if(!map[deviceId])return false;
   map[deviceId].branch=branch;map[deviceId].updatedAt=new Date().toISOString();
   saveAssignments(map);
+  /* The device IS that user's device: the user's own branch record
+     follows the reassignment, so login keeps working on the new branch. */
+  const uid2=String(map[deviceId].id||"").toLowerCase();
+  if(uid2){
+    const users=getUsers();const u=users[uid2];
+    if(u&&u.branch!==branch){u.branch=branch;u.updatedAt=new Date().toISOString();saveUsers(users);}
+    const local=getLocalUsers();
+    if(local[uid2]&&local[uid2].branch!==branch){local[uid2].branch=branch;saveLocalUsers(local);}
+  }
   addAudit("Admin","Branch change for device "+deviceId+" to "+branch+(note?(" — "+note):""),"assignment");
   return true;
 }
@@ -498,11 +738,31 @@ function fbPullMeta(){
   const db=fb();if(!db)return Promise.resolve(false);
   return (async function(){
     try{
-      const [b,a]=await Promise.all([db.collection("ds_meta").doc("branches").get(),db.collection("ds_meta").doc("assignments").get()]);
+      const [b,a,u,r]=await Promise.all([db.collection("ds_meta").doc("branches").get(),db.collection("ds_meta").doc("assignments").get(),db.collection("ds_meta").doc("users").get(),db.collection("ds_meta").doc("requests").get()]);
       try{const d=b.data?b.data():b;if(d&&d.branches)lsSet("ds_branches",d.branches);}catch(e){}
       _markSyncOk();
       try{const d=a.data?a.data():a;if(d){const devs=d.devices||d;const clean={};Object.keys(devs).forEach(function(k){if(devs[k]&&typeof devs[k]==="object"&&devs[k].role)clean[k]=devs[k];});if(Object.keys(clean).length)lsSet("ds_assignments",clean);}}catch(e){}
+      /* v2.3 — user registry + approval requests ride the same pull.
+         A Restaurant approval made on another phone lands here, and
+         flips the requester's local approved flag so they can log in. */
+      try{
+        const du=u.data?u.data():u;
+        if(du){const clean={};Object.keys(du).forEach(function(k){if(du[k]&&typeof du[k]==="object"&&du[k].id&&du[k].role)clean[k]=du[k];});if(Object.keys(clean).length)lsSet("ds_users",clean);}
+        const dr=r.data?r.data():r;
+        if(dr){const clean={};Object.keys(dr).forEach(function(k){if(dr[k]&&typeof dr[k]==="object"&&dr[k].userId&&dr[k].status)clean[k]=dr[k];});if(Object.keys(clean).length)lsSet("ds_requests",clean);}
+        const users=getUsers(),local=getLocalUsers();let changed=false;
+        Object.keys(users).forEach(function(id){
+          const rec=users[id];if(!rec||!local[id])return;
+          if(rec.status==="approved"&&local[id].approved===false){local[id].approved=true;changed=true;}
+          if(rec.status==="suspended"&&!local[id].suspended){local[id].suspended=true;changed=true;}
+          if(rec.status==="approved"&&local[id].suspended){local[id].suspended=false;changed=true;}
+          if(rec.branch&&local[id].branch!==rec.branch){local[id].branch=rec.branch;changed=true;}
+          if(rec.perms){local[id].perms=rec.perms;changed=true;}
+        });
+        if(changed)saveLocalUsers(local);
+      }catch(e){}
       if(typeof window.onAssignmentsSynced==="function")window.onAssignmentsSynced();
+      if(typeof window.onUsersSynced==="function")window.onUsersSynced();
       return true;
     }catch(e){_markSyncError(e);return false;}
   })();
@@ -561,6 +821,70 @@ function startOrderListener(){
 }
 function stopOrderListener(){try{if(_listenerUnsub)_listenerUnsub();}catch(e){}_listenerUnsub=null;_listenerActive=false;_listenerScope=null;updateSyncPill();}
 function _scopeKey(){return (_dsRole||"")+"|"+(_dsRole==="admin"?"":(_syncBranch||""));}
+/* ---------- patila sync (ds_patila, v2.3) ----------
+   Same live-listener pattern as orders: Kitchen sees its own branch,
+   the Restaurant sees its pair (by pairId), Admin sees everything.
+   A Returned patila is TERMINAL — it never flips back to Out. */
+let _patilaListenerUnsub=null,_patilaListenerActive=false,_patilaListenerScope=null;
+function fbSyncPatila(p){return _fbWrite("ds_patila/"+p.id,p);}
+function _patilaQuery(){
+  const db=fb();const col=db.collection("ds_patila");
+  if(_dsRole==="admin")return col.orderBy("updatedAt","desc").limit(200);
+  const b=_syncBranch||getUserBranch(_dsRole||"kitchen");
+  if(!b)return null;
+  if(_dsRole==="restaurant"){const pid=pairOfBranch(b);if(!pid)return null;return col.where("pairId","==",pid);}
+  return col.where("branch","==",b);
+}
+function mergePatila(remote){
+  if(!remote||!remote.id)return null;
+  if(remote.deleted){
+    const list=getPatilas();const i=list.findIndex(function(x){return x.id===remote.id;});
+    if(i>=0){list.splice(i,1);savePatilas(list);}
+    return "removed";
+  }
+  const list=getPatilas();const i=list.findIndex(function(x){return x.id===remote.id;});
+  if(i<0){list.push(remote);savePatilas(list);return "added";}
+  const local=list[i];
+  if(local.status==="Returned"&&remote.status==="Out")return null;
+  if(_cmpTs(remote.updatedAt,local.updatedAt)>0||(_cmpTs(remote.updatedAt,local.updatedAt)===0&&remote.updatedBy==="Admin"&&local.updatedBy!=="Admin")){list[i]=remote;savePatilas(list);return "updated";}
+  return null;
+}
+function fbPullPatilas(){
+  const db=fb();if(!db){updateSyncPill();return Promise.resolve(0);}
+  try{
+    const q=_patilaQuery();
+    if(!q){updateSyncPill();return Promise.resolve(0);}
+    const p=q.get();
+    const handle=function(snap){
+      let n=0;(snap.docs||[]).forEach(function(d){const data=d.data?d.data():d;if(mergePatila(data))n++;});
+      _markSyncOk();_afterPatilasChanged();return n;
+    };
+    if(p&&p.then)return p.then(handle).catch(function(e){_markSyncError(e);return 0;});
+    return Promise.resolve(handle(p));
+  }catch(e){_markSyncError(e);return Promise.resolve(0);}
+}
+function startPatilaListener(){
+  const db=fb();if(!db){updateSyncPill();return false;}
+  if(_patilaListenerActive&&_patilaListenerUnsub)return true;
+  try{
+    const q=_patilaQuery();
+    if(!q){updateSyncPill();return false;}
+    const unsub=q.onSnapshot(function(snap){
+      _patilaListenerActive=true;
+      (snap.docs||[]).forEach(function(d){const data=d.data?d.data():d;mergePatila(data);});
+      _markSyncOk();_afterPatilasChanged();
+    },function(err){_patilaListenerActive=false;_markSyncError(err||"Patila listener failed");});
+    _patilaListenerUnsub=typeof unsub==="function"?unsub:null;
+    _patilaListenerActive=true;_patilaListenerScope=_scopeKey();updateSyncPill();return true;
+  }catch(e){_patilaListenerActive=false;_markSyncError(e);return false;}
+}
+function stopPatilaListener(){try{if(_patilaListenerUnsub)_patilaListenerUnsub();}catch(e){}_patilaListenerUnsub=null;_patilaListenerActive=false;_patilaListenerScope=null;updateSyncPill();}
+function _afterPatilasChanged(){
+  try{if(typeof renderPatilas==="function")renderPatilas();}catch(e){}
+  try{if(typeof renderAdminPatilas==="function")renderAdminPatilas();}catch(e){}
+  try{if(typeof window.onPatilasSynced==="function")window.onPatilasSynced();}catch(e){}
+  updateSyncPill();
+}
 function _afterOrdersChanged(beforePendingIds){
   const notified=new Set(lsGet("ds_notified",[]));
   const nowPending=getOrders().filter(function(o){return o.status==="Pending";});
@@ -571,6 +895,9 @@ function _afterOrdersChanged(beforePendingIds){
   try{if(typeof renderPending==="function")renderPending();}catch(e){}
   try{if(typeof renderMyOrders==="function")renderMyOrders();}catch(e){}
   try{if(typeof renderEntries==="function")renderEntries();}catch(e){}
+  /* v2.3 — the order form's placed badges must stay fresh too: a dish
+     whose order was voided/rejected/cleared shows as orderable again. */
+  try{if(typeof renderDishes==="function")renderDishes();}catch(e){}
   try{if(typeof window.onOrdersSynced==="function")window.onOrdersSynced();}catch(e){}
   checkTone();updateSyncPill();
 }
@@ -643,7 +970,7 @@ function earlySync(role){
   if(b)_syncBranch=b;
   if(role==="kitchen"&&b)setAlertBranch(b);
   try{fbPullMeta();}catch(e){}
-  if(role==="admin"||b){try{fbPullOrders();}catch(e){}try{startOrderListener();}catch(e){}}
+  if(role==="admin"||b){try{fbPullOrders();}catch(e){}try{startOrderListener();}catch(e){}try{fbPullPatilas();}catch(e){}try{startPatilaListener();}catch(e){}}
   return true;
 }
 /* Called on unlock/login in every app. Starts the live listener,
@@ -655,13 +982,17 @@ function afterLogin(role,branch){
   if(role==="kitchen")setAlertBranch(_syncBranch);
   if(_listenerActive&&_listenerScope!==_scopeKey())stopOrderListener();
   fbPullMeta();fbPullOrders();startOrderListener();
+  fbPullPatilas();startPatilaListener();
   requestNotificationPermission();
+  /* v2.3 — SOUND: login IS the gesture. The bell is on for the whole
+     logged-in session; no separate "Enable Sound" tap is needed. */
+  if(role==="kitchen")setToneEnabled(true);
   if(role==="kitchen"){startNativeListening();registerFCMToken();}
   updateSyncPill();
 }
 try{document.addEventListener("visibilitychange",function(){if(!document.hidden){fbPullOrders();if(!_listenerActive)startOrderListener();}});}catch(e){}
 try{window.addEventListener("online",function(){try{fbInit();}catch(e){}startFbInitPoll();flushOutbox();fbPullOrders();if(!_listenerActive)startOrderListener();});}catch(e){}
-setInterval(function(){if(!_listenerActive){fbPullOrders();startOrderListener();}},5000);
+setInterval(function(){if(!_listenerActive){fbPullOrders();startOrderListener();}if(!_patilaListenerActive){fbPullPatilas();startPatilaListener();}},5000);
 setInterval(function(){if(getOutbox().length)flushOutbox();},15000);
 
 /* ---------- day storage ----------
@@ -709,6 +1040,7 @@ function ordersForRestaurant(branch,date,status){
 }
 function newOrder(o){
   o=o||{};
+  _requirePerm("restaurant",_curUserId,"placeOrders","place orders");
   const r=recipeById(o.recipe);
   if(!r)throw new Error("Unknown recipe: "+o.recipe);
   if(r.dest!=="use"||ORDERABLE.indexOf(r.id)<0)throw new Error("Recipe cannot be ordered: "+r.label);
@@ -725,6 +1057,38 @@ function newOrder(o){
     status:"Pending",createdBy:o.branch,createdAt:new Date().toISOString(),acceptedBy:null,acceptedAt:null,rejectReason:"",updatedAt:new Date().toISOString(),updatedBy:o.branch};
   const list=getOrders();list.push(order);saveOrders(list);fbSyncOrder(order);
   return order;
+}
+/* v2.3 — ONE-BUTTON multi-dish order: the Restaurant fills several
+   dish lines in ONE form and ONE button sends them all together.
+   One order doc per dish line (same shape as a single newOrder), so
+   the Kitchen still accepts each line separately and the totals are
+   unchanged. All lines are validated FIRST, so a bad line never
+   leaves a half-placed batch behind. */
+function newOrdersBatch(branch,date,lines){
+  if(!Array.isArray(lines)||!lines.length)throw new Error("Add at least one dish");
+  _requirePerm("restaurant",_curUserId,"placeOrders","place orders");
+  const seen={};
+  lines.forEach(function(l){
+    l=l||{};
+    const r=recipeById(l.recipe);
+    if(!r)throw new Error("Unknown recipe: "+l.recipe);
+    if(r.dest!=="use"||ORDERABLE.indexOf(r.id)<0)throw new Error("Recipe cannot be ordered: "+r.label);
+    if(seen[r.id])throw new Error(r.label+" is already in this order — combine it into one line");
+    seen[r.id]=true;
+    if(num(l.qtyA)<=0&&num(l.qtyB)<=0)throw new Error("Enter a quantity (kg) for "+r.label);
+    /* Atomicity: the whole batch goes together or not at all — a
+       dish already placed today refuses the ENTIRE batch up front,
+       instead of placing the earlier lines and then failing. */
+    const already=ordersForRestaurant(branch,date).find(function(o){return o.recipe===r.id&&(o.status==="Pending"||o.status==="Accepted");});
+    if(already)throw new Error(r.label+" is already placed today — enter it again tomorrow or ask the Admin");
+  });
+  if(!branch)throw new Error("Branch is required");
+  if(!date)throw new Error("Date is required");
+  const created=[];
+  lines.forEach(function(l){
+    created.push(newOrder({recipe:l.recipe,branch:branch,date:date,qtyA:l.qtyA,qtyB:l.qtyB,patila:l.patila}));
+  });
+  return created;
 }
 /* Immutability: a placed order can NEVER be edited or deleted by the
    Restaurant or the Kitchen. Only the Admin can change it, through
@@ -810,6 +1174,7 @@ function hasPendingOrders(branch){
 /* ---------- Kitchen stock records (append-only, immutable) ---------- */
 function addStockIn(branchId,date,rec){
   rec=rec||{};
+  _requirePerm("kitchen",_curUserId,"updateStock","update stock");
   const day=getDay(branchId,date)||emptyDay();
   if(rec.kind==="shoppers"){
     const n=Math.max(0,Math.round(num(rec.count)||0));
@@ -824,6 +1189,7 @@ function addStockIn(branchId,date,rec){
 }
 function addSendOut(branchId,date,rec){
   rec=rec||{};
+  _requirePerm("kitchen",_curUserId,"updateStock","update stock");
   if(!MATERIALS[rec.material])throw new Error("Choose a material");
   const kg=num(rec.kg);if(kg<=0)throw new Error("Enter kg sent out");
   const day=getDay(branchId,date)||emptyDay();
@@ -839,6 +1205,7 @@ function addSendOut(branchId,date,rec){
    the entry still records and Remaining clamps at 0 — never minus. */
 function addSendOutDish(branchId,date,rec){
   rec=rec||{};
+  _requirePerm("kitchen",_curUserId,"updateStock","update stock");
   if(!rec.dest)throw new Error("Choose the destination branch");
   const day=getDay(branchId,date)||emptyDay();
   if(rec.recipe){
@@ -854,6 +1221,7 @@ function addSendOutDish(branchId,date,rec){
   return saveDay(branchId,date,day);
 }
 function setPrevious(branchId,date,prev){
+  _requirePerm("kitchen",_curUserId,"updateStock","update stock");
   const day=getDay(branchId,date)||emptyDay();
   if(day.previousLocked)throw new Error("Previous stock is locked for this day — only the Admin can change it (Settings -> Entries).");
   MAT_ORDER.forEach(m=>{day.previous[m]=num(prev[m]);});
@@ -900,10 +1268,141 @@ function adminSetPrevious(branchId,date,material,value,note){
   addAudit("Admin",note,"Set Previous "+MATERIALS[material].label+" = "+fmtKg(value)+" kg ("+branchId+", "+date+")");
   return day;
 }
+/* ---------- Self-Pickup Patila tracking (v2.3) ----------
+   PHYSICAL patilas (the numbered cooking vessels), NOT food quantities.
+   One record per SEND-OUT EVENT in ds_patila — never inside the food
+   stock maths (Recipe Use / Total Used / Stock Bill never see it).
+   Fields: branch (Kitchen branch), pairId, count (REQUIRED, any
+   number), mode "self" = Self Pickup by Customer / "rider" = By Rider,
+   numbers (OPTIONAL patila numbers, comma-separated), note (OPTIONAL
+   destination note — customer name or house number), status Out /
+   Returned, outDate, returnedDate, returnedBy.
+   The Kitchen records the send-out AND marks the return — the
+   Restaurant only SEES the pending list and can never clear it. The
+   Admin sees every branch and can correct / mark returned. Pending
+   entries are NEVER filtered by date: they stay pending across days
+   until the Kitchen clears them. Counts are shown separately by mode
+   as plain digits ("Self Pickup by Customer: 3", "By Rider: 2").
+   The word is always "Patila" + Urdu "پتیلا" — never "Pot"/"Pods". */
+function patilaModeLabel(mode){return mode==="rider"?"By Rider":"Self Pickup by Customer";}
+function getPatilas(){return lsGet("ds_patila",[]);}
+function savePatilas(list){lsSet("ds_patila",list);}
+function patilaOut(branch,opts){
+  opts=opts||{};
+  if(_curUserRole==="restaurant")throw new Error("Only the Kitchen records patila send-outs");
+  const count=Math.max(0,Math.round(num(opts.count)||0));
+  if(count<=0)throw new Error("Enter how many patilas went out");
+  const mode=opts.mode==="rider"?"rider":"self";
+  if(!branch)throw new Error("Branch is required");
+  const pairId=pairOfBranch(branch);
+  if(!pairId)throw new Error("Branch is not part of a Restaurant/Kitchen pair");
+  const numbers=String(opts.numbers||"").split(",").map(function(s){return s.trim();}).filter(Boolean);
+  const rec={id:uid("PAT"),branch:branch,pairId:pairId,count:count,mode:mode,numbers:numbers,
+    note:String(opts.note||"").trim(),status:"Out",outDate:todayStr(),
+    createdBy:branch,createdAt:new Date().toISOString(),
+    returnedDate:null,returnedBy:null,updatedAt:new Date().toISOString(),updatedBy:branch};
+  const list=getPatilas();list.push(rec);savePatilas(list);fbSyncPatila(rec);
+  return rec;
+}
+/* ONLY the Kitchen can mark a patila returned. The Restaurant cannot
+   clear it — enforced here AND by the UI (no return button is rendered
+   in the Restaurant app at all). */
+function patilaReturn(id,by){
+  if(_curUserRole==="restaurant")throw new Error("Only the Kitchen can mark a patila returned — the Restaurant cannot clear it");
+  const list=getPatilas();const p=list.find(function(x){return x.id===id;});
+  if(!p)throw new Error("Patila record not found");
+  if(p.status==="Returned")throw new Error("Already returned");
+  p.status="Returned";p.returnedDate=todayStr();p.returnedBy=by||_curUserId||"Kitchen";
+  p.updatedAt=new Date().toISOString();p.updatedBy=p.returnedBy;
+  savePatilas(list);fbSyncPatila(p);return p;
+}
+function patilaReturnByNumber(pairId,number,by){
+  const n=String(number||"").trim();if(!n)throw new Error("Enter a patila number");
+  const p=getPatilas().find(function(x){return x.pairId===pairId&&x.status==="Out"&&(x.numbers||[]).indexOf(n)>=0;});
+  if(!p)throw new Error("No pending patila with number "+n);
+  return patilaReturn(p.id,by);
+}
+function pendingPatilas(pairId){
+  /* No pairId (Admin oversight) -> every pending patila, all branches. */
+  return getPatilas().filter(function(p){return p.status==="Out"&&(pairId==null||p.pairId===pairId);});
+}
+function pendingPatilasForBranch(branchId){
+  const pid=pairOfBranch(branchId);if(!pid)return [];
+  return pendingPatilas(pid);
+}
+/* Counts separately by mode as plain digits — never one lumped number. */
+function patilaCounts(pairId){
+  const pend=pendingPatilas(pairId);let self=0,rider=0;
+  pend.forEach(function(p){if(p.mode==="rider")rider+=num(p.count);else self+=num(p.count);});
+  return {self:self,rider:rider,total:self+rider,entries:pend.length};
+}
+function patilaCountsForBranch(branchId){
+  const pid=pairOfBranch(branchId);if(!pid)return {self:0,rider:0,total:0,entries:0};
+  return patilaCounts(pid);
+}
+function returnedPatilas(pairId){
+  return getPatilas().filter(function(p){return p.pairId===pairId&&p.status==="Returned";})
+    .sort(function(a,b){return (a.returnedDate<b.returnedDate?1:a.returnedDate>b.returnedDate?-1:0);});
+}
+function adminPatilaReturn(id,note){
+  requireAdmin();
+  if(!note||!String(note).trim())throw new Error("An audit note is required to mark a patila returned");
+  const list=getPatilas();const p=list.find(function(x){return x.id===id;});
+  if(!p)throw new Error("Patila record not found");
+  if(p.status==="Returned")throw new Error("Already returned");
+  p.status="Returned";p.returnedDate=todayStr();p.returnedBy="Admin";
+  p.updatedAt=new Date().toISOString();p.updatedBy="Admin";
+  savePatilas(list);fbSyncPatila(p);
+  addAudit("Admin",note,"Marked patila returned: "+p.count+" patila(s), "+patilaModeLabel(p.mode)+" ("+p.branch+", "+p.outDate+")");
+  return p;
+}
+function adminDeletePatila(id,note){
+  requireAdmin();
+  if(!note||!String(note).trim())throw new Error("An audit note is required to delete a patila record");
+  const list=getPatilas();const i=list.findIndex(function(x){return x.id===id;});
+  if(i<0)throw new Error("Patila record not found");
+  const p=list[i];list.splice(i,1);savePatilas(list);
+  _fbWrite("ds_patila/"+id,{id:id,deleted:true,branch:p.branch,pairId:p.pairId,updatedAt:_nowISO(),updatedBy:"Admin"});
+  addAudit("Admin",note,"Deleted patila record: "+p.count+" patila(s), "+patilaModeLabel(p.mode)+" ("+p.branch+", "+p.outDate+")");
+  return true;
+}
+/* Shared pending-patila HTML for the apps + website. Counts first as
+   plain digits by mode; the entry detail (numbers + destination note)
+   sits below in an expandable detail per entry. canClear=true only
+   in the Kitchen (and Admin) UI — the Restaurant never gets a button. */
+function patilaPendingHtml(pairId,canClear){
+  const c=patilaCounts(pairId);
+  const pend=pendingPatilas(pairId);
+  let h="<div class='patilabanner'>🍲 Patilas Still Out <span class='ur'>(پتیلا)</span>"
+    +"<div class='pcounts'>Self Pickup by Customer: <b>"+c.self+"</b> &nbsp;·&nbsp; By Rider: <b>"+c.rider+"</b> &nbsp;·&nbsp; Total: <b>"+c.total+"</b></div></div>";
+  if(!pend.length){h+="<p class='muted'>No patilas out — every patila is back.</p>";return h;}
+  h+="<ul class='qlist'>"+pend.map(function(p){
+    const nums=(p.numbers&&p.numbers.length)?("Patila No. "+p.numbers.map(function(n){return esc(n);}).join(", ")):"";
+    const det=[];
+    if(nums)det.push(nums);
+    if(p.note)det.push("Going to: "+esc(p.note));
+    det.push("Out: "+esc(p.outDate));
+    return "<li><b>"+p.count+" patila(s) — "+patilaModeLabel(p.mode)+"</b> <span class='ur'>(پتیلا)</span>"
+      +(canClear?" <button class='btn green small' data-patila-return='"+p.id+"'>✓ Received Back</button>":"")
+      +"<details class='patiladetail'><summary>Detail</summary>"+det.join("<br>")+"</details></li>";
+  }).join("")+"</ul>";
+  return h;
+}
+function patilaReturnedHtml(pairId){
+  const ret=returnedPatilas(pairId).slice(0,20);
+  if(!ret.length)return "<p class='muted'>No patilas returned yet.</p>";
+  return "<ul class='qlist'>"+ret.map(function(p){
+    const nums=(p.numbers&&p.numbers.length)?("Patila No. "+p.numbers.map(function(n){return esc(n);}).join(", ")):"";
+    return "<li><b>"+p.count+" patila(s) — "+patilaModeLabel(p.mode)+"</b> <span class='badge acc'>Returned "+esc(p.returnedDate||"")+"</span>"
+      +(nums?"<br>"+nums:"")+(p.note?"<br>Going to: "+esc(p.note):"")+"</li>";
+  }).join("")+"</ul>";
+}
 /* ---------- alert tone (looping, stops when no pending orders) ----------
    Scoped to ONE kitchen branch: a Kitchen hears ONLY its own pair's
    pending orders, never another branch's. */
-let _toneEnabled=lsGet("ds_tone_enabled",false),_toneSounding=false,_toneCtx=null,_toneOsc=null,_toneGain=null,_toneTimer=null,_toneMaster=null;
+/* v2.3 — SOUND defaults ON: the bell stays enabled for the whole
+   logged-in session (login enables it; Log Out switches it off). */
+let _toneEnabled=lsGet("ds_tone_enabled",true),_toneSounding=false,_toneCtx=null,_toneOsc=null,_toneGain=null,_toneTimer=null,_toneMaster=null;
 let _alertBranch=null;
 function setAlertBranch(b){_alertBranch=b||null;checkTone();}
 function setToneEnabled(b){
@@ -911,7 +1410,9 @@ function setToneEnabled(b){
   if(_toneEnabled){try{if(typeof AudioContext!=="undefined"||typeof webkitAudioContext!=="undefined"){const AC=window.AudioContext||window.webkitAudioContext;if(!_toneCtx)_toneCtx=new AC();if(_toneCtx.state==="suspended")_toneCtx.resume();}}catch(e){}}
   checkTone();return _toneEnabled;
 }
-function toneOn(){return _toneEnabled&&hasPendingOrders(_alertBranch||KITCHEN_BRANCH);}
+/* v2.3: the bell is a KITCHEN sound only — the Restaurant and Admin
+   apps never ring, even though the tone flag is shared. */
+function toneOn(){return _dsRole==="kitchen"&&_toneEnabled&&hasPendingOrders(_alertBranch||KITCHEN_BRANCH);}
 /* v2.2 — restaurant service bell: two bright "ding-ding" chimes per
    cycle (sine partials ~1568/2093/2637 Hz, fast exponential decay),
    FULL volume (master gain 1.0). Loops while toneOn(); stops when no
@@ -1172,6 +1673,13 @@ function reportText(branchId,dateLabel,c,displayId){
     if(!(c.previous[m]>0||c.received[m]>0||c.used[m]>0||c.sendOut[m]>0))return;
     lines.push("- "+MATERIALS[m].label+": Previous "+fmtKg(c.previous[m])+" + Received "+fmtKg(c.received[m])+" - Used "+fmtKg(c.used[m])+" - Send Out "+fmtKg(c.sendOut[m])+" = Remaining "+fmtKg(c.remaining[m])+" kg");
   });
+  /* v2.3 — patila account: SEPARATE from the food stock above, counts
+     by mode as plain digits. Never inside Recipe Use / Total Used. */
+  const pc=patilaCountsForBranch(branchId);
+  lines.push("Self-Pickup Patilas Still Out (separate from food stock): Self Pickup by Customer: "+pc.self+", By Rider: "+pc.rider+", Total: "+pc.total);
+  pendingPatilasForBranch(branchId).forEach(function(p){
+    lines.push("- "+p.count+" patila(s), "+patilaModeLabel(p.mode)+", out "+p.outDate+(p.numbers&&p.numbers.length?(", Patila No. "+p.numbers.join(", ")):"")+(p.note?(", going to: "+p.note):""));
+  });
   lines.push("Developed by Abdullah");
   lines.push("0311 5928444");
   return lines.join("\n");
@@ -1219,9 +1727,31 @@ function renderReport(branchId,dateLabel,c,displayId){
     +"<h3>📋 Recipe Use (ریسیپی استعمال)</h3><table><tr><th>Item (آئٹم)</th><th>Rice (چاول)</th><th>Protein (گوشت / دال)</th><th>Patila (پتیلہ)</th></tr>"+rows+"</table>"
     +"<h3>📦 Total Used Today (آج کا استعمال)</h3><div class='usedgrid'>"+usedCards+"</div>"
     +"<h3>🧾 Stock Bill (اسٹاک بل)</h3><div class='billgrid'>"+billCards+"</div>"
+    +patilaReportHtml(branchId)
     +"</div>"
     +"<div class='rfoot'>Developed by Abdullah<br>0311 5928444</div></div>";
   return {html:html,text:reportText(branchId,dateLabel,c,displayId),computed:c};
+}
+/* v2.3 — patila section of the Daily Report: its OWN section, counts
+   by mode as plain digits in a table (so the PDF text layer captures
+   them), with the entry detail below. Never inside the food totals. */
+function patilaReportHtml(branchId){
+  const pc=patilaCountsForBranch(branchId);
+  const pend=pendingPatilasForBranch(branchId);
+  let h="<h3>🍲 Self-Pickup Patilas Still Out <span class='ur'>(پتیلا)</span></h3>"
+    +"<table><tr><th>Self Pickup by Customer</th><th>By Rider</th><th>Total</th></tr>"
+    +"<tr><td><b>"+pc.self+"</b></td><td><b>"+pc.rider+"</b></td><td><b>"+pc.total+"</b></td></tr></table>";
+  if(pend.length){
+    h+="<table><tr><th>Patilas</th><th>Mode</th><th>Out Date</th><th>Detail</th></tr>"
+      +pend.map(function(p){
+        return "<tr><td><b>"+p.count+"</b></td><td>"+patilaModeLabel(p.mode)+"</td><td>"+esc(p.outDate)+"</td><td>"
+          +((p.numbers&&p.numbers.length)?("Patila No. "+p.numbers.map(function(n){return esc(n);}).join(", ")):"—")
+          +(p.note?("<br>Going to: "+esc(p.note)):"")+"</td></tr>";
+      }).join("")+"</table>";
+  }else{
+    h+="<p class='muted'>No patilas out — every patila is back.</p>";
+  }
+  return h;
 }
 /* ---------- sharing ----------
    WHY the old long-text share failed: the whole report was stuffed into
@@ -1344,7 +1874,7 @@ async function shareReport(opts){
 window.DS={
   computeDay:computeDay,goldenDay:goldenDay,loadGoldenDay:loadGoldenDay,
   aggregateRange:aggregateRange,getDaysInRange:getDaysInRange,
-  newOrder:newOrder,canEditOrder:canEditOrder,acceptOrder:acceptOrder,rejectOrder:rejectOrder,
+  newOrder:newOrder,newOrdersBatch:newOrdersBatch,canEditOrder:canEditOrder,acceptOrder:acceptOrder,rejectOrder:rejectOrder,
   editOrder:editOrder,deleteOrder:deleteOrder,
   adminEditOrder:adminEditOrder,adminDeleteOrder:adminDeleteOrder,
   addStockIn:addStockIn,addSendOut:addSendOut,addSendOutDish:addSendOutDish,setPrevious:setPrevious,
@@ -1359,6 +1889,22 @@ window.DS={
   pairOfBranch:pairOfBranch,displayBranch:displayBranch,getRecipes:getRecipes,
   hasSetup:hasSetup,setupUser:setupUser,checkLogin:checkLogin,resetPin:resetPin,
   getUserId:getUserId,getUserBranch:getUserBranch,getUserMobile:getUserMobile,
+  getLocalUsers:getLocalUsers,getUsers:getUsers,getUserRec:getUserRec,
+  getRequests:getRequests,approveRequest:approveRequest,rejectRequest:rejectRequest,
+  pendingRequestsForPair:pendingRequestsForPair,pendingRequestsForBranch:pendingRequestsForBranch,
+  approvedUsersFor:approvedUsersFor,
+  adminSetUserPerms:adminSetUserPerms,adminSetUserStatus:adminSetUserStatus,
+  getUserPerms:getUserPerms,canPlaceOrders:canPlaceOrders,canUpdateStock:canUpdateStock,canApproveIds:canApproveIds,
+  currentUser:currentUser,setCurrentUser:setCurrentUser,doLogout:doLogout,
+  patilaOut:patilaOut,patilaReturn:patilaReturn,patilaReturnByNumber:patilaReturnByNumber,
+  pendingPatilas:pendingPatilas,pendingPatilasForBranch:pendingPatilasForBranch,
+  patilaCounts:patilaCounts,patilaCountsForBranch:patilaCountsForBranch,
+  returnedPatilas:returnedPatilas,adminPatilaReturn:adminPatilaReturn,adminDeletePatila:adminDeletePatila,
+  patilaModeLabel:patilaModeLabel,getPatilas:getPatilas,
+  patilaPendingHtml:patilaPendingHtml,patilaReturnedHtml:patilaReturnedHtml,patilaReportHtml:patilaReportHtml,
+  fbSyncPatila:fbSyncPatila,mergePatila:mergePatila,fbPullPatilas:fbPullPatilas,
+  startPatilaListener:startPatilaListener,stopPatilaListener:stopPatilaListener,
+  patilaListenerActive:function(){return _patilaListenerActive;},
   adminCheck:adminCheck,adminSetPassword:adminSetPassword,adminHasPassword:adminHasPassword,
   adminResetPassword:adminResetPassword,
   getDeviceId:getDeviceId,getAssignments:getAssignments,registerAssignment:registerAssignment,
@@ -1428,33 +1974,56 @@ function showGate(){
   if(hasSetup("restaurant")){$("setupCard").style.display="none";$("loginCard").style.display="";}
   else{$("setupCard").style.display="";$("loginCard").style.display="none";}
   $("restApp").style.display="none";
+  $("hdrLogoutBtn").style.display="none";
+  const pl=$("setupPinLen");
+  if(pl&&!pl._wired){pl._wired=true;pl.addEventListener("change",()=>{$("setupPin").maxLength=parseInt(pl.value,10)||6;});}
 }
-async function unlock(){
-  branch=adoptAssignment("restaurant")||getUserBranch("restaurant");
+async function unlock(id){
+  userId=String(id||getUserId("restaurant")||"").trim().toLowerCase();
+  const local=(getLocalUsers()||{})[userId];
+  branch=adoptAssignment("restaurant",userId)||(local?local.branch:"")||getUserBranch("restaurant");
   const br=branchById(branch);
   if(!br||!br.active){$("loginMsg").innerHTML="<span class='err'>Your branch has been deactivated by the Admin — contact the Supply Manager.</span>";return;}
-  userId=getUserId("restaurant");
+  setCurrentUser("restaurant",userId);
   $("loginCard").style.display="none";$("setupCard").style.display="none";$("restApp").style.display="";
   $("idChip").textContent="ID: "+userId+" · "+displayBranch(branch)+" (branch locked)";
+  $("hdrLogoutBtn").style.display="";
   $("orderBranchName").textContent=displayBranch(branch);
   afterLogin("restaurant",branch);
   loadAll();
 }
 window.onAssignmentsSynced=function(){
   if(!branch)return;
-  const nb=adoptAssignment("restaurant");
+  const nb=adoptAssignment("restaurant",userId);
   if(nb&&nb!==branch){branch=nb;$("idChip").textContent="ID: "+userId+" · "+displayBranch(branch)+" (branch locked)";loadAll();}
 };
+window.onUsersSynced=function(){if(branch)renderRequests();};
+window.onPatilasSynced=function(){if(branch)renderPatilas();};
+window.onLoggedOut=function(){showGate();};
+$("hdrLogoutBtn").addEventListener("click",()=>{doLogout("restaurant");});
+$("showSetupBtn").addEventListener("click",()=>{$("loginCard").style.display="none";$("setupCard").style.display="";$("backToLoginBtn").style.display="";});
+$("backToLoginBtn").addEventListener("click",()=>{$("setupCard").style.display="none";$("loginCard").style.display="";});
 $("setupBtn").addEventListener("click",async()=>{
   try{
-    await setupUser("restaurant",{id:$("setupId").value,branch:$("setupBranch").value,pin:$("setupPin").value,mobile:$("setupMobile").value});
-    $("setupMsg").innerHTML="<span class='ok'>✓ Setup saved.</span>";unlock();
+    const res=await setupUser("restaurant",{id:$("setupId").value,branch:$("setupBranch").value,pin:$("setupPin").value,mobile:$("setupMobile").value});
+    if(res&&res.approved===false){
+      $("setupMsg").innerHTML="<span class='ok'>✓ Your ID was sent to your Restaurant for approval — ask them to approve it, then log in here with your ID + PIN.</span>";
+      $("setupCard").style.display="none";$("loginCard").style.display="";return;
+    }
+    $("setupMsg").innerHTML="<span class='ok'>✓ Setup saved.</span>";unlock($("setupId").value);
   }catch(e){$("setupMsg").innerHTML="<span class='err'>"+esc(e.message)+"</span>";}
 });
 $("loginBtn").addEventListener("click",async()=>{
-  const ok=await checkLogin("restaurant",$("loginId").value,$("loginPin").value);
+  const id=$("loginId").value;
+  /* Deactivated branch first: the message must say so even before
+     the PIN is checked (the pair may have been switched off). */
+  const local=(getLocalUsers()||{})[String(id||"").trim().toLowerCase()];
+  const brId=local?local.branch:getUserBranch("restaurant");
+  const br=branchById(brId);
+  if(brId&&br&&!br.active){$("loginMsg").innerHTML="<span class='err'>Your branch has been deactivated by the Admin — contact the Supply Manager.</span>";return;}
+  const ok=await checkLogin("restaurant",id,$("loginPin").value);
   if(!ok){$("loginMsg").innerHTML="<span class='err'>Wrong ID or PIN — try again.</span>";return;}
-  unlock();
+  unlock(id);
 });
 $("forgotBtn").addEventListener("click",()=>{const r=$("resetBox");r.style.display=r.style.display==="none"?"":"none";});
 $("resetBtn").addEventListener("click",async()=>{
@@ -1496,8 +2065,7 @@ function renderDishes(){
     }else{
       h+="<div class='rows'>"+rowHtml(r)+"</div>"
         +"<button class='btn ghost small addrow'>+ Add Row (1 Patila per row)</button>"
-        +"<div class='sumrow' data-sum='"+rid+"'>Total: 0 kg</div>"
-        +"<button class='btn place'>Place Order — Send to Kitchen</button>";
+        +"<div class='sumrow' data-sum='"+rid+"'>Total: 0 kg</div>";
     }
     card.innerHTML=h;wrap.appendChild(card);
     if(!placed)updateSums(card,rid);
@@ -1515,22 +2083,71 @@ $("dishCards").addEventListener("click",e=>{
   if(e.target.classList.contains("addrow")){
     card.querySelector(".rows").insertAdjacentHTML("beforeend",rowHtml(r));updateSums(card,rid);return;
   }
-  if(e.target.classList.contains("place")){
-    let a=0,b=0,pat=0;
-    card.querySelectorAll(".entryrow").forEach(row=>{
-      const av=num(row.querySelector(".ra").value),bv=row.querySelector(".rb")?num(row.querySelector(".rb").value):0;
-      a+=av;b+=bv;if(av>0||bv>0)pat++;
-    });
-    try{
-      newOrder({recipe:rid,branch:branch,date:orderDate(),qtyA:a,qtyB:b,patila:pat});
-      renderDishes();renderMyOrders();renderKitchenStock();
-    }catch(err){alert(err.message);}
-  }
 });
 $("dishCards").addEventListener("input",e=>{
   const card=e.target.closest(".dishcard");if(!card)return;
   updateSums(card,card.getAttribute("data-dish"));
 });
+/* v2.3 — ONE BUTTON: every filled dish line goes to the Kitchen
+   together. One order per dish line; the Kitchen still accepts each
+   line separately. */
+$("placeAllBtn").addEventListener("click",()=>{
+  const lines=[];
+  document.querySelectorAll("#dishCards .dishcard").forEach(card=>{
+    const rid=card.getAttribute("data-dish");
+    if(dishState(rid))return; // already placed today — skip
+    let a=0,b=0,pat=0;
+    card.querySelectorAll(".entryrow").forEach(row=>{
+      const av=num(row.querySelector(".ra").value),bv=row.querySelector(".rb")?num(row.querySelector(".rb").value):0;
+      a+=av;b+=bv;if(av>0||bv>0)pat++;
+    });
+    if(a>0||b>0)lines.push({recipe:rid,qtyA:a,qtyB:b,patila:pat});
+  });
+  if(!lines.length){$("placeMsg").innerHTML="<span class='err'>Add at least one dish first.</span>";return;}
+  try{
+    const created=newOrdersBatch(branch,orderDate(),lines);
+    $("placeMsg").innerHTML="<span class='ok'>✓ "+created.length+" dish(es) sent to your Kitchen together.</span>";
+    renderDishes();renderMyOrders();renderKitchenStock();
+  }catch(err){$("placeMsg").innerHTML="<span class='err'>"+esc(err.message)+"</span>";}
+});
+/* v2.3 — ID Requests: the Restaurant of this branch approves or
+   rejects new IDs. The Admin never sees these. */
+function renderRequests(){
+  if(!branch)return;
+  const pid=pairOfBranch(branch);
+  const list=pid?pendingRequestsForPair(pid):[];
+  $("tabRequests").textContent=list.length?("Requests ("+list.length+")"):"Requests";
+  if(!list.length){$("reqList").innerHTML="<p class='muted'>No ID requests waiting — new IDs for your branch will appear here for your approval.</p>";return;}
+  $("reqList").innerHTML=list.map(r=>{
+    return "<div class='ordercard'><b>"+esc(r.userId)+"</b> <span class='muted'>"+esc(r.role)+" · "+esc(displayBranch(r.branch))+" · Mobile: "+esc(r.mobile||"—")+" · "+esc(new Date(r.createdAt).toLocaleString())+"</span>"
+      +"<br><button class='btn green small' data-approve='"+r.id+"'>✓ Approve</button>"
+      +" <button class='btn red small' data-reject='"+r.id+"'>✕ Reject</button>"
+      +"<div id='reqrej-"+r.id+"' style='display:none'><label>Reason (optional)</label><input id='reqrejin-"+r.id+"' placeholder='e.g. Not our staff'><button class='btn red small' data-rejectgo='"+r.id+"'>Confirm Reject</button></div>"
+      +"</div>";
+  }).join("");
+}
+$("reqList").addEventListener("click",e=>{
+  const aid=e.target.getAttribute("data-approve");
+  const rid=e.target.getAttribute("data-reject");
+  const rg=e.target.getAttribute("data-rejectgo");
+  if(aid){try{approveRequest(aid,userId);renderRequests();}catch(err){alert(err.message);}return;}
+  if(rid){$("reqrej-"+rid).style.display="";return;}
+  if(rg){try{rejectRequest(rg,userId,$("reqrejin-"+rg).value);renderRequests();}catch(err){alert(err.message);}}
+});
+/* v2.3 — Patila view (read-only): the Restaurant SEES the pending
+   patilas every day, but has NO button to clear them — only the
+   Kitchen can mark a patila returned. */
+function patilaBannerHtml(pid){
+  const c=patilaCounts(pid);
+  return "<div class='patilabanner'>🍲 Patilas Still Out <span class='ur'>(پتیلا)</span><div class='pcounts'>Self Pickup by Customer: <b>"+c.self+"</b> &nbsp;·&nbsp; By Rider: <b>"+c.rider+"</b> &nbsp;·&nbsp; Total: <b>"+c.total+"</b></div></div>";
+}
+function renderPatilas(){
+  if(!branch)return;
+  const pid=pairOfBranch(branch);
+  if(!pid)return;
+  $("patilaBanner").innerHTML=patilaBannerHtml(pid);
+  $("patilaView").innerHTML=patilaPendingHtml(pid,false)+"<h3>Returned Log</h3>"+patilaReturnedHtml(pid);
+}
 $("orderDate").addEventListener("change",()=>{renderDishes();renderMyOrders();renderKitchenStock();});
 function renderMyOrders(){
   const list=ordersForRestaurant(branch,orderDate()).slice().reverse();
@@ -1550,14 +2167,15 @@ function renderKitchenStock(){
   $("kitchenStockView").innerHTML=MAT_ORDER.map(m=>"<div class='stockcell'><b>"+fmtKg(c.remaining[m])+" kg</b><span>"+MATERIALS[m].label+" ("+MATERIALS[m].ur+")<br>Remaining</span></div>").join("");
 }
 function showTab(which){
-  ["Order","Orders","Report"].forEach(t=>{$("tab"+t).classList.toggle("on",t===which);$("pane"+t).style.display=t===which?"":"none";});
+  ["Order","Orders","Requests","Report"].forEach(t=>{$("tab"+t).classList.toggle("on",t===which);$("pane"+t).style.display=t===which?"":"none";});
 }
 $("tabOrder").addEventListener("click",()=>showTab("Order"));
 $("tabOrders").addEventListener("click",()=>{showTab("Orders");renderMyOrders();});
+$("tabRequests").addEventListener("click",()=>{showTab("Requests");renderRequests();});
 $("tabReport").addEventListener("click",()=>showTab("Report"));
 function loadAll(){
   $("orderDate").value=todayStr();
-  renderDishes();renderMyOrders();renderKitchenStock();
+  renderDishes();renderMyOrders();renderKitchenStock();renderRequests();renderPatilas();
 }
 bindReport(()=>pairedKitchen(branch)||branch, ()=>branch);
 fbInit();startFbInitPoll();earlySync("restaurant");showGate();

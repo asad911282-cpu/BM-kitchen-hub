@@ -1,4 +1,4 @@
-# Biryani Master — Kitchen Daily Stock v2.2
+# Biryani Master — Kitchen Daily Stock v2.3
 
 Three apps, one live Firebase project (**bm-kitchen-hub**), no saved daily
 files. All data lives in Firestore as a continuous record; any historical
@@ -6,6 +6,51 @@ day or date range can be pulled up in every app. This is a complete fresh
 build — the v1.0 pack was rejected by the user and none of its template
 is reused here.
 
+> **⚠️ v2.3 RULES MUST BE RE-PUBLISHED ONCE: this pack's rules file adds
+> `ds_patila` (patila tracking). The old v2.1/v2.2 rules do NOT cover it,
+> so patila sync would be DENIED until the new file is pasted + Published
+> in the Firebase console (Firestore → Rules → paste → Publish). Do this
+> once when you deploy v2.3. The `ds_meta/users` + `ds_meta/requests`
+> docs need NO new rule (ordinary open `ds_meta` docs).**
+>
+> **v2.3 (2026-11-12) — one-button ordering, Restaurant ID approval,
+> logout everywhere, PIN 4–6 digits, sound stays on, Admin powers,
+> shoppers detail, self-pickup Patila tracking, Supply Manager recolour.**
+> (1) **ONE-BUTTON ordering:** the Restaurant adds several dish lines in
+> one form, then ONE "Place Order — Send to Kitchen" button sends them
+> all together (one order per dish line; the Kitchen still accepts each
+> line separately). (2) **ID approval by the RESTAURANT:** a new ID/device
+> goes to the branch's Restaurant for Approve/Reject (Requests tab) —
+> the Admin never sees these requests; an unapproved ID cannot log in.
+> The FIRST account for a branch+role auto-approves — that is how the
+> first Restaurant account gets in. (3) **Sound stays enabled while
+> logged in:** the tone defaults ON and logging in enables it (the login
+> tap is the audio gesture) — no separate "Enable Sound" tap any more.
+> (4) **LOGOUT everywhere** (all three apps + website): logout returns
+> to the login screen WITHOUT erasing the device setup, so a different
+> approved user can log in on the same phone (e.g. a helper taking over
+> from a chef on leave). (5) **PIN 4–6 digits, choosable** at setup
+> (4, 5 or 6); login + PIN reset accept 4–6 digits; PINs stay hashed.
+> (6) **Admin powers:** Admin can void/delete ANY order including
+> Pending, and delete any false stock/daily entry (reason + audit log);
+> new **Users & Permissions** screen — grant/revoke per-user permissions
+> (place orders / update stock / approve IDs) and suspend/reactivate
+> users (suspended users cannot log in). (7) **My Stock:** a live
+> shoppers-received detail sits right under "Add Shopper" (count + kg +
+> today's entries). (8) **Supply Manager recolour:** the Admin app is
+> now **deep green + gold — NO blue anywhere** (template, header, buttons,
+> launcher icon); the anime-manager launcher mark is recoloured green;
+> Kitchen/Restaurant templates + logos are untouched; the Biryani Master
+> logo stays intact in every header and report. (9) **Self-pickup
+> Patila tracking** (see "Patila tracking" below): the Kitchen records
+> patilas sent out (Self Pickup by Customer / By Rider), they stay
+> pending in BOTH apps (incl. previous days) until ONLY the Kitchen
+> marks them returned; counts by mode as digits in the apps and the
+> Daily Report; the word is always "Patila" + Urdu "پتیلا", never
+> "Pot/Pods". Everything from v2.2 is unchanged otherwise — credit
+> placement, quick sync, formatted PDF share, bell tone, branch lock,
+> adaptive display, deploy-ready pack.
+>
 > **v2.2 (2026-11-12) — credit placement, quick sync, formatted PDF
 > share, bell tone, branch lock, adaptive display.** "Developed by
 > Abdullah" + "0311 5928444" moved out of the app footers into the
@@ -38,12 +83,12 @@ is reused here.
 
 | App | Package | APK | Label |
 |---|---|---|---|
-| Supply Manager Admin | `com.bm.supplier` | `DS-Admin-v2.2.apk` | Supply Manager |
-| Restaurant | `com.bm.restaurant` | `DS-Restaurant-v2.2.apk` | BM Restaurant |
-| Kitchen | `com.bm.kitchen` | `DS-Kitchen-v2.2.apk` | BM Kitchen |
+| Supply Manager Admin | `com.bm.supplier` | `DS-Admin-v2.3.apk` | Supply Manager |
+| Restaurant | `com.bm.restaurant` | `DS-Restaurant-v2.3.apk` | BM Restaurant |
+| Kitchen | `com.bm.kitchen` | `DS-Kitchen-v2.3.apk` | BM Kitchen |
 | Website — Biryani Master Supply Manager | — (web app) | `DS-Website.html` | Biryani Master Supply Manager |
 
-Version 2.2 (versionCode 4). Fresh installs — new packages, no update over
+Version 2.3 (versionCode 5). Fresh installs — new packages, no update over
 Kitchen Supply v1.6 (a different system, untouched by this pack).
 Firebase config for **bm-kitchen-hub** is baked into each HTML file
 (one config per app — Kitchen / Restaurant / Supply Manager — plus
@@ -120,8 +165,10 @@ check them on the Kitchen phone after installing:
 2. **Battery optimisation OFF / Unrestricted** for BM Kitchen
    (Settings → Apps → BM Kitchen → Battery → Unrestricted). If Android
    optimises the app, it kills the background listener and the tone.
-3. Keep the app's **"Enable Sound"** tapped once after first login
-   (browsers block autoplay until the user taps).
+3. **v2.3: no separate "Enable Sound" tap any more** — the tone is ON
+   by default and logging in enables it (the login tap is the audio
+   gesture). If the tone ever stays silent, check the in-app sound
+   toggle is ON and the steps above.
 
 ## FCM deploy steps (killed-app push — optional, best-effort)
 
@@ -131,7 +178,8 @@ check them on the Kitchen phone after installing:
 2. In `build_html.py`, replace `VAPID_KEY =
    'PASTE_YOUR_VAPID_KEY_HERE'` with that key and rebuild the HTMLs
    (APKs must be rebuilt after — the key is baked into the HTML).
-3. Publish the v2.1 rules file (it adds the open `ds_tokens` path).
+3. Publish the **v2.3 rules file** (it adds the open `ds_patila` path
+   for patila tracking — **re-publish once, or patila sync is denied**).
 4. A Cloud Function that watches `ds_orders` for new Pending docs and
    sends an FCM message to the matching `ds_tokens` entry is still
    needed for killed-app delivery — the `functions/` directory for it
@@ -139,16 +187,24 @@ check them on the Kitchen phone after installing:
    is the primary background path until then. FCM needs the Blaze plan
    for Cloud Functions.
 
-## Admin — void / delete test orders (new in v2.1)
+## Admin — void / delete any order + Users & Permissions (v2.3)
 
-- **Void one order:** Admin → Settings → Entries → tap the order →
-  "Void" (or call `DS.adminVoidOrder(id, reason, note)`). Status
-  becomes **Voided**, with reason + audit entry. Voided orders vanish
-  from the Kitchen queue and are EXCLUDED from Used / Recipe Use /
-  totals / reports.
-- **Delete one order:** same screen → "Delete Entry" (audit note
-  required). The order is removed locally AND a tombstone is written
-  to Firestore, so it disappears on every device.
+- **Void ANY order (new in v2.3 — including Pending):** Admin →
+  Settings → Entries → tap the order → "Void" (or call
+  `DS.adminVoidOrder(id, reason, note)`). Status becomes **Voided**,
+  with reason + audit entry. Voided orders vanish from the Kitchen
+  queue and are EXCLUDED from Used / Recipe Use / totals / reports.
+- **Delete one order / false entry:** same screen → "Delete Entry"
+  (audit note required). The entry is removed locally AND a tombstone
+  is written to Firestore, so it disappears on every device. The Admin
+  can delete any false stock/daily entry the same way.
+- **Users & Permissions (new in v2.3):** Admin → Users & Devices tab →
+  "Users & Permissions". Every user ID in the system, by branch and
+  role. Tick or untick a permission (place orders / update stock /
+  approve IDs), or **suspend** a user — a suspended user cannot log in
+  at all. Every change needs an audit note and is written to the Audit
+  Log. Permissions are enforced in the apps (a user without a
+  permission cannot do that action).
 - **Bulk clear all test data:** Admin only —
   `DS.adminClearTestData('CLEAR', 'audit note')`. You must type exactly
   `CLEAR` plus an audit note. It deletes ALL local orders + ALL local
@@ -165,9 +221,11 @@ check them on the Kitchen phone after installing:
 1. **Create the Firestore database** (if not already created) — production mode
    is fine; the rules below open the `ds_*` paths.
 2. **Publish the rules file** `Biryani-Master-Daily-Stock-Firestore-Rules.rules`
-   (Firestore → Rules → paste → Publish). Admin writes are gated on
-   `admin@biryanimaster.com`; day/order data is open read/write like the
-   other Biryani projects.
+   (Firestore → Rules → paste → Publish). **v2.3: re-publish once even
+   if you already published v2.1/v2.2** — the v2.3 file adds the
+   `ds_patila` rule; without it, patila tracking sync is denied.
+   Admin writes are gated on `admin@biryanimaster.com`; day/order data
+   is open read/write like the other Biryani projects.
 3. **Enable Email/Password sign-in** (Authentication → Sign-in method) so the
    Admin's Firebase Auth session satisfies the `admin@biryanimaster.com`
    rules gate. If this is not enabled, the Admin app still logs in locally
@@ -199,11 +257,25 @@ already registered in bm-kitchen-hub.
 Setup order is fixed in every app: **(1) ID** — the user's fixed permanent
 ID (e.g. a Restaurant's own ID such as "shaheen"; it stays that specific ID
 afterwards, only the Admin can change it), **(2) Branch/Pair** (choose from
-the Admin's list), **(3) own 4-digit PIN**, **(4) mobile number** (account
+the Admin's list), **(3) own PIN — choose 4, 5 or 6 digits** (v2.3), **(4) mobile number** (account
 recovery / PIN reset). **Login afterwards is ID + PIN — NOT PIN-only.**
 A wrong ID is refused. The ID is shown in the app header after login.
 Branch is locked after login (only Admin can change it, via Admin app
 device assignments, audit-logged).
+
+**ID approval (v2.3):** a NEW ID is not usable at once. When this branch
+already has a user, a new ID goes to the branch's **Restaurant** for
+approval first (Requests tab — Approve/Reject); the Admin never sees
+these requests. An unapproved ID cannot log in. **The FIRST account for
+a branch+role auto-approves** — that is how the first Restaurant account
+gets in. A user who is already approved (e.g. on another phone) logs in
+straight away.
+
+**Logout (v2.3):** every app + the website has a **Log Out** button in
+the header. Logout ends the session and returns to the login screen —
+it NEVER erases the device setup, so any approved ID can log in on the
+same phone afterwards (multi-user login per device, e.g. a helper taking
+over from a chef on leave).
 
 - **Admin:** log in with **admin@biryanimaster.com** (this ID only — it is
   also the admin gate in the Firestore rules). First login sets the Admin
@@ -241,16 +313,19 @@ pair** — a Restaurant's order goes only to its own paired Kitchen, never to
 another branch's Kitchen (enforced by `branchPairId` on every order).
 Admin can add more pairs (always one Restaurant + one Kitchen).
 
-## Orders
+## Orders (v2.3 — one button sends every dish line together)
 
-1. Restaurant places an order (dish + kg + Patila). Status: **Pending**.
+1. The Restaurant adds **several dish lines in one form** (dish + kg +
+   Patila each, add/remove a line), then taps ONE **"Place Order — Send
+   to Kitchen"** button at the bottom — every line goes to the Kitchen
+   together (one order per dish line; the Kitchen still accepts each
+   line separately). Status: **Pending**.
 2. Once placed, the Restaurant **cannot edit or delete** the order.
 3. The paired Kitchen sees it in its pending queue and a **continuous
    non-stop alert tone** sounds (Web Audio loop + vibration) until the
    Kitchen explicitly taps **Accept** or **Reject** (reject needs a reason).
-   Browsers block autoplay, so the Kitchen app has a one-tap
-   **"Enable Sound"** button on first open — tap it once and the tone
-   works from then on.
+   v2.3: the tone is ON by default and logging in enables it — no
+   separate "Enable Sound" tap.
 4. Accepting **locks the order fully** (immutable) and feeds its quantities
    into that day's Recipe Use / Used sums. Rejected orders feed nothing,
    and the dish unlocks for the Restaurant to enter again. The tone is
@@ -394,6 +469,17 @@ send-out Daal Chawal Tota 1 / Daal 1.
   `{deleted:true, updatedAt, updatedBy:'Admin'}`.
 - `ds_tokens/<token>` — v2.1 FCM device token for the Kitchen
   (pairId, kitchenBranch, role 'kitchen', updatedAt).
+- `ds_patila/<patilaId>` — v2.3 patila tracking: one record per
+  send-out event (branch, pairId, count, mode 'self'/'rider', numbers[],
+  note, status Out/Returned, outDate, returnedDate/returnedBy,
+  createdBy, updatedAt). Open read/write (see the v2.3 rules file).
+- `ds_meta/requests` — v2.3 ID approval requests (one doc per pending
+  ID: userId, role, branch, pairId, mobile, status, createdAt). The
+  branch's Restaurant approves/rejects; Admin never sees them.
+- `ds_meta/users` — v2.3 approved user registry (per ID: role, branch,
+  pinHash, mobile, perms {placeOrders, updateStock, approveIds},
+  status approved/suspended, updatedAt). Login checks the entered ID +
+  PIN against this registry (offline fallback: the locally saved user).
 - `ds_meta/branches` — branch pairs; `ds_meta/assignments` — per-device
   branch assignments (branch lock); `ds_meta/admin` — Admin record;
   `ds_audit` — override log
@@ -402,50 +488,86 @@ When offline, each app works on-device (localStorage) and syncs to
 Firestore when online. The header pill shows "● Firebase Online" only
 when actually connected, otherwise "Local only".
 
-## Icons (new for v2.0)
+## Patila tracking — self-pickup patilas (new in v2.3)
+
+Physical cooking pots (patilas) go out with food and often never come
+back — the user's own vehicle brings pots back, but self-pickup pots
+don't. The Kitchen numbers the pots; this log tracks them.
+
+- **Kitchen records send-outs** (Self-Pickup Patilas section): how many
+  patilas went out (**count, required — any number 1/2/3+**), sent out by
+  **"Self Pickup by Customer"** or **"By Rider"** (our van), optional
+  patila numbers (comma-separated, e.g. P-1, P-2) and an optional note
+  (customer name or house number — where it is going). Numbers and note
+  are optional; the count alone is enough.
+- **Pending in BOTH apps:** the pending patilas show in the Restaurant
+  AND Kitchen daily views, **including from previous days — never
+  auto-cleared**. The pending display leads with the total count as
+  plain digits, separately by mode — "Self Pickup by Customer: 3" and
+  "By Rider: 2" (plus total) — never merged, never a worded list.
+  Numbers and note appear ONLY in the entry's detail below (expandable),
+  never in the pending headline.
+- **ONLY the Kitchen can mark a patila Returned / clear a pending
+  entry** — the Restaurant CANNOT clear it (its mark-return control is
+  absent); the Kitchen is accountable for where a patila went. The
+  Admin sees all branches' pending patilas and can mark one returned or
+  delete a false entry (audit note required, audit-logged).
+- **Daily Report** carries the pending patila count/numbers as its own
+  separate section, split by mode.
+- **Separate from the food-stock accounting** — patila tracking is never
+  inside Recipe Use / Total Used / Stock Bill.
+- **Wording:** the word is always **"Patila"** + Urdu **"پتیلا"** with it
+  — never "Pot/Pots/Pod/Pods" anywhere in the apps.
+
+## Icons (v2.3 Admin recolour)
 
 Fresh designs, distinct from v1.0, all carrying the real Biryani Master
 logo in a gold-ringed circle at top-centre, verified at 48px under a
 circular mask (`icons-check-48.png`):
-Admin royal blue #1D4ED8, gold shield + white check, pill "ADMIN";
+Admin **deep green #14532D** (v2.3 recolour — was royal blue #1D4ED8;
+the anime manager art was recoloured blue → deep green, uniform + background),
+gold clipboard + gold check, pill "SUPPLY MANAGER";
 Restaurant warm orange #EA580C, gold steaming bowl, pill "RESTAURANT";
 Kitchen fresh teal #0F766E, gold stock pot + ladle, pill "KITCHEN".
 All densities + splash (portrait/landscape) per density, generated by
 `gen_icons.py`. The APK build script copies them.
 
-## Verification (v2.2 pack)
+## Verification (v2.3 pack)
 
-- jsdom harness `verify/harness.js`: **full matrix, run 3 consecutive
-  times clean** — the v2.0 suite (139 tests, updated for 7 materials and
-  the recomputed golden day) PLUS new suites: (1) Kitchen entries
-  (shoppers ×7, Previous lock, Out-Stock, Staff Food, invalid inputs,
-  edit/delete blocked), (2) sync two-device on a shared fake Firestore
-  (Restaurant order → Kitchen receives it + alert/notification fires,
-  accept/reject propagation, Admin override propagation, offline→online
-  outbox replay, sync-down of days/history, branch-pair isolation,
-  wrong-branch login refused), (3) display (Daily Report totals, Total
-  Used Today, Stock Bill Remaining clamped at 0, Patila counts incl.
-  Daal Chawal double, date ranges 11–11 vs 10–11, WhatsApp share
-  payload completeness, PDF content), (4) Admin (every case — login,
-  pairs, items, users/devices, Settings → Entries, void, delete, bulk
-  clear, Admin-only gates), (5) CLAMP — Remaining never negative for
-  any of the 7 materials (Used > Previous + Received, Send Out >
-  what remains, zero Previous, usage on previous stock lying there;
-  rendered report + share text checked for any negative remaining
-  value), (6) PATILA — 1 entry = 1 patila for every dish, Daal Chawal
-  double, D-Plaza send-out patila, range patila sums, (7) SEND — Send
-  to Other Branch deducts from the matching stocks (Daal Chawal from
-  Tota, never Rice; Biryani from Rice; insufficient stock records with
-  Remaining 0), Restaurant has no Send UI.
-- A fake Firestore (in-memory collections + `onSnapshot` listener
-  registry) is injected via `window.__DS_FB__` in jsdom beforeParse;
-  the apps use a single `fb()` accessor that prefers it over the real
-  SDK, so the whole two-device sync matrix runs offline.
-- Icons: all densities present at the right sizes; 48px circular-mask
-  montage checked visually.
-- APKs are built by `build_apks.sh` (NOT run here — verification runs it):
-  version 2.2 / versionCode 4, packages `com.bm.supplier` /
-  `com.bm.restaurant` / `com.bm.kitchen`.
+- jsdom harness `verify/harness.js`: **396 pass, 0 fail** — the v2.0
+  suite (139 tests, updated for 7 materials and the recomputed golden
+  day) PLUS the v2.1/v2.2 suites PLUS new v2.3 suites: (8) ONE-BUTTON
+  multi-dish batch order (both lines sent together, atomic validation —
+  duplicate dish / empty line refuses the WHOLE batch, nothing created),
+  (9) ID APPROVAL — unapproved ID refused, Restaurant approves/rejects,
+  first account auto-approves, Admin never sees requests, (10) LOGOUT —
+  logout returns to login without erasing setup, a DIFFERENT approved
+  user logs in on the same phone, tone OFF after logout / ON after
+  re-login, (11) PIN 4–6 — 5- and 6-digit PINs accepted at setup, login
+  and reset; 3- and 7-digit PINs refused, (12) ADMIN POWERS — void a
+  PENDING order (audit-logged), suspend/reactivate a user (suspended
+  cannot log in), (13) SHOPPERS DETAIL — live count + kg under Add
+  Shopper, (14) PATILA — send-out counts by mode as digits, Restaurant
+  sees the same pending list, count-alone works, Restaurant has NO
+  mark-return control and cannot return (throws), Kitchen UI "Received
+  Back" button marks it returned, pending survives a date change,
+  report patila section by mode as digits and separate from food-stock
+  totals, Admin oversight + mark-returned + audit.
+- Website tests `verify/website-test.js`: **104 pass, 0 fail** (incl. the
+  v2.3 one-button batch order on the website + Requests tab).
+- Rendered checks `verify/render-v23.js` (headless Chrome, 360/480/800px):
+  **91 pass, 0 fail** — no page-level horizontal scroll anywhere, report
+  preview (11px credit, paired restaurant name, spelled-out date),
+  WhatsApp share sends ONE PDF file, Download PDF works, branch lock
+  holds, plus the v2.3 screens (order form, Requests tab, Users &
+  Permissions, green Admin template, patila section incl. the Kitchen
+  UI return button and the Restaurant's absent return control).
+- PDFs built by the apps' own code: Kitchen golden day 10 pp A4,
+  6-day range 13 pp A4, website golden day 8 pp A4 (all 595.3×841.9 pt).
+- APKs are built by `build_apks.sh`: version 2.3 / versionCode 5,
+  packages `com.bm.supplier` / `com.bm.restaurant` / `com.bm.kitchen`,
+  apksigner v2+v3 verified, embedded HTML byte-identical to the shipped
+  HTMLs.
 
 ## Assumptions (flagged, not hidden)
 
@@ -508,7 +630,7 @@ hard-coded as the Firebase authDomain).
 
 Login on the website: PIN hashes are NOT synced anywhere, so the first
 web login is ID + REGISTERED mobile number (verified against the synced
-assignment record) and then the user sets a 4-digit WEBSITE PIN (hashed,
+assignment record) and then the user sets a 4–6 digit WEBSITE PIN (hashed,
 in `ds_meta/webusers`); returning login is ID + website PIN. Admin logs
 in with email + password (admin@biryanimaster.com), same as the Admin app.
 This is the ONE documented difference from the apps, and it is spelled
