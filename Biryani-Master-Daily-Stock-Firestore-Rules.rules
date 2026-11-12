@@ -1,0 +1,98 @@
+rules_version = '2';
+
+// Biryani Master Kitchen Daily Stock v2.1 — Firestore rules (project
+// bm-kitchen-hub — the project for the three apps AND the website
+// "Biryani Master Supply Manager", which shares the same live ds_*
+// data. Rewritten 2026-11-12 for the final v2.1 pack; the rules are
+// the same as v2.0 — no rule changed, only the header and the notes
+// (the website and the per-role configs do not need different rules:
+// rules are project-level and key-independent).
+//
+// The apps are HTML-wrapped and use Firebase via the web SDK, NOT a
+// Gradle native build, so no google-services Gradle plugin /
+// firebase-bom is needed in the APK build. The Firebase config is
+// baked into the HTML files (per-role configs, bm-kitchen-hub).
+//
+// HOW TO APPLY (console steps — the user does these in Firebase console):
+//   1. Firebase console > project bm-kitchen-hub > Build > Firestore
+//      Database > Create database > Production mode > location
+//      (asia-south1 or nearest) > Enable. (Skip if already created.)
+//   2. Firestore > Rules tab > paste this WHOLE file > Publish.
+//   3. Firebase console > Authentication > Sign-in method > enable
+//      Email/Password. This lets the Supply Manager Admin app sign in
+//      as admin@biryanimaster.com (it does this automatically with the
+//      password the Admin sets on first use, and creates that Auth user
+//      on first setup if it does not exist yet) so its writes satisfy
+//      the adminEmail() gate below. If this step is skipped, the Admin
+//      app still works, but its audit-log / admin-record writes stay
+//      on-device only until Auth is enabled.
+//   4. All three Android apps are already registered in bm-kitchen-hub
+//      (com.bm.kitchen, com.bm.restaurant, com.bm.supplier) — no package
+//      console step remains. Only the steps above are still needed
+//      before live sync works.
+//
+// NOTE — this ruleset is ONLY for bm-kitchen-hub. The Kitchen Supply
+// ks_* rules live in the OLD project (biryani-master-kitchen-supply) and
+// are unaffected — do NOT paste these rules into that project.
+//
+// ADMIN GATE — admin@biryanimaster.com ONLY. The Supply Manager Admin
+// is the single central authority: only a Firebase Auth session signed
+// in as that email may write the admin-only paths (ds_audit and the
+// ds_meta/admin record). Everyone else (including the Restaurant and
+// Kitchen apps, which log in with their own 4-digit PINs, not Firebase
+// Auth) can READ those paths but cannot write them.
+// Operational paths (ds_daily, ds_orders, ds_meta branches/items)
+// stay open read/write: the PIN-logged Restaurant and Kitchen apps
+// must write orders and daily stock to keep the kitchen running,
+// and they carry no Firebase Auth session — identity there is enforced
+// inside the apps (branch-pair routing + PIN login), not by these rules.
+// The website logs in the same way (ID + PIN per role, Admin by email)
+// and writes through the same open paths; its website-PIN records live
+// in ds_meta/webusers, which is an ordinary ds_meta doc (open like
+// branches/items), so no extra rule is needed for the website.
+//
+// Covers ONLY the new Daily Stock paths (three apps + website: Supply
+// Manager Admin, Restaurant, Kitchen — all read/write the same live
+// data, no saved static daily files):
+//   ds_daily   — per-day stock record: previous / stock-in / send-out
+//                per material, with pot counts from accepted orders
+//   ds_orders  — restaurant orders to the kitchen (pending -> accepted;
+//                immutable once accepted; only the Admin can change
+//                one, through Settings -> Entries, audit-logged).
+//                Every order carries branchPairId and goes ONLY to the
+//                paired Kitchen of the same branch.
+//   ds_meta    — branches, materials, recipes, units, settings
+//   ds_audit   — append-only log of who changed what (accepts, overrides,
+//                corrections by Supply Manager Admin)
+//   ds_tokens  — FCM device tokens for the Kitchen (killed-app push path)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function adminEmail() { return 'admin@biryanimaster.com'; }
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == adminEmail();
+    }
+    match /ds_daily/{doc=**} {
+      allow read, write: if true;
+    }
+    match /ds_orders/{doc=**} {
+      allow read, write: if true;
+    }
+    match /ds_meta/{docId} {
+      allow read: if true;
+      // The 'admin' record is admin-only; every other ds_meta doc
+      // (branches, items, webusers) stays open for the PIN-logged apps
+      // and the website.
+      allow write: if docId != 'admin' || isAdmin();
+    }
+    match /ds_audit/{doc=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /ds_tokens/{doc=**} {
+      // v2.1: FCM device tokens for the Kitchen (killed-app push path).
+      // Open like the other ds_* paths — tokens carry no user data.
+      allow read, write: if true;
+    }
+  }
+}
